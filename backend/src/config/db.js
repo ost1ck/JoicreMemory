@@ -6,8 +6,20 @@ const shouldUseSsl =
   env.databaseUrl.includes('supabase.com') ||
   env.nodeEnv === 'production';
 
+function removeSslMode(connectionString) {
+  try {
+    const url = new URL(connectionString);
+    url.searchParams.delete('sslmode');
+    return url.toString();
+  } catch (error) {
+    return connectionString.replace(/[?&]sslmode=[^&]+&?/, (match) =>
+      match.startsWith('?') && match.endsWith('&') ? '?' : ''
+    );
+  }
+}
+
 const pool = new Pool({
-  connectionString: env.databaseUrl,
+  connectionString: shouldUseSsl ? removeSslMode(env.databaseUrl) : env.databaseUrl,
   ssl: shouldUseSsl
     ? {
         rejectUnauthorized: false

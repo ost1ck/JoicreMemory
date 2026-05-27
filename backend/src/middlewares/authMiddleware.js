@@ -49,6 +49,11 @@ async function authenticate(req, res, next) {
       return next(error);
     }
 
+    console.error('Firebase token verification failed', {
+      code: error.code,
+      message: error.message
+    });
+
     return next(new ApiError(401, 'Invalid or expired Firebase token'));
   }
 }

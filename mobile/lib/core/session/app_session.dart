@@ -37,7 +37,13 @@ class AppSession extends ChangeNotifier {
       return;
     }
 
-    await _syncIdentity(identity);
+    try {
+      await _syncIdentity(identity);
+    } catch (error) {
+      errorMessage = error.toString();
+      apiClient.clearAuth();
+      currentUser = null;
+    }
   }
 
   Future<void> signIn({required String email, required String password}) async {

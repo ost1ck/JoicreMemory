@@ -1,80 +1,82 @@
+import 'package:joicrememory/l10n/localization.dart';
+import '../../../core/ui/loading_skeleton.dart';
+import '../../../core/ui/empty_state.dart';
+import 'create_event_screen.dart';
+import '../domain/usecases/load_nearby_events.dart';
+import 'controllers/nearby_events_controller.dart';
+import '../../../app/app_scope.dart';
 import 'package:flutter/material.dart';
-import 'package:geolocator/geolocator.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:intl/intl.dart';
 
-import '../../../core/constants/app_colors.dart';
-import '../../../core/session/app_session.dart';
-import '../data/event.dart';
-import '../data/event_category.dart';
-import 'event_category_filter_bar.dart';
+import '../../auth/presentation/controllers/auth_controller.dart';
+import 'widgets/event_card.dart';
+import '../../map/presentation/widgets/map_filters_sheet.dart';
+import '../domain/entities/event_filters.dart';
 import 'event_details_screen.dart';
 
 class EventListScreen extends StatefulWidget {
   const EventListScreen({super.key, required this.session});
 
-  final AppSession session;
+  final AuthController session;
 
   @override
   State<EventListScreen> createState() => _EventListScreenState();
 }
 
 class _EventListScreenState extends State<EventListScreen> {
-  static const _ukraineCenter = LatLng(49.0, 31.0);
-
-  late Future<List<Event>> _eventsFuture;
-  String? _selectedCategory;
+  late final NearbyEventsController _controller;
 
   @override
   void initState() {
     super.initState();
-    _eventsFuture = _loadEvents();
-  }
-
-  Future<List<Event>> _loadEvents() async {
-    final center = await _resolveCurrentLocation();
-    return widget.session.eventApi.listEvents(
-      latitude: center.latitude,
-      longitude: center.longitude,
-      radiusMeters: 20000,
-      category: _selectedCategory,
+    final scope = AppScope.read(context);
+    _controller = NearbyEventsController(
+      LoadNearbyEvents(scope.events, scope.location),
     );
+    _controller.load();
   }
 
-  void _refresh() {
-    setState(() {
-      _eventsFuture = _loadEvents();
-    });
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
   }
+
+  Future<void> _refresh() => _controller.load();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Події'),
+        title: Text(context.l10n.events),
         actions: [
           IconButton(
             onPressed: _refresh,
-            icon: const Icon(Icons.refresh),
-            tooltip: 'Оновити',
+            icon: Icon(Icons.refresh),
+            tooltip: context.l10n.refresh,
           ),
         ],
       ),
-      body: FutureBuilder<List<Event>>(
-        future: _eventsFuture,
-        builder: (context, snapshot) {
+      body: ListenableBuilder(
+        listenable: _controller,
+        builder: (context, _) {
           return Column(
             children: [
-              EventCategoryFilterBar(
-                selectedCategory: _selectedCategory,
-                onChanged: (category) {
-                  setState(() {
-                    _selectedCategory = category;
-                    _eventsFuture = _loadEvents();
-                  });
-                },
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16),
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: FilledButton.tonalIcon(
+                    onPressed: _openFilters,
+                    icon: Icon(Icons.tune),
+                    label: Text(
+                      _controller.filters.isActive
+                          ? context.l10n.filters
+                          : context.l10n.filters197,
+                    ),
+                  ),
+                ),
               ),
-              Expanded(child: _buildEventList(snapshot)),
+              Expanded(child: _buildEventList()),
             ],
           );
         },
@@ -82,37 +84,83 @@ class _EventListScreenState extends State<EventListScreen> {
     );
   }
 
-  Widget _buildEventList(AsyncSnapshot<List<Event>> snapshot) {
-    if (snapshot.connectionState == ConnectionState.waiting) {
-      return const Center(child: CircularProgressIndicator());
+  Future<void> _openFilters() async {
+    final result = await showModalBottomSheet<MapFilterSelection>(
+      context: context,
+      isScrollControlled: true,
+      showDragHandle: true,
+      builder:
+          (_) => MapFiltersSheet(
+            filters: _controller.filters,
+            hasLocation: _controller.location.location != null,
+          ),
+    );
+    if (mounted && result?.filters != null) {
+      await _controller.applyFilters(result!.filters!);
+    }
+  }
+
+  Widget _buildEventList() {
+    if (_controller.isLoading) {
+      return ListView(
+        padding: EdgeInsets.all(16),
+        children: [LoadingSkeleton()],
+      );
     }
 
-    if (snapshot.hasError) {
+    if (_controller.errorMessage != null) {
       return _MessageState(
         icon: Icons.error_outline,
-        text: 'Не вдалося завантажити події',
+        text: context.localizeMessage(_controller.errorMessage!),
         action: _refresh,
       );
     }
 
-    final events = snapshot.data ?? [];
+    final events = _controller.events;
     if (events.isEmpty) {
-      return _MessageState(
-        icon: Icons.event_busy,
-        text: 'Поки немає подій поруч',
-        action: _refresh,
+      return ListView(
+        padding: EdgeInsets.all(24),
+        children: [
+          EmptyState(
+            title: context.l10n.noEventsNearbyYet,
+            message:
+                !_controller.filters.isActive
+                    ? context.l10n.createAnEventAndInvitePeopleToJoin
+                    : context.l10n.tryBrowsingAllCategories,
+            actionLabel:
+                !_controller.filters.isActive
+                    ? context.l10n.createEvent
+                    : context.l10n.resetFilters,
+            onAction: () async {
+              if (_controller.filters.isActive) {
+                await _controller.applyFilters(EventFilters());
+              } else {
+                await Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder:
+                        (routeContext) => CreateEventScreen(
+                          session: widget.session,
+                          onCreated: () => Navigator.pop(routeContext),
+                        ),
+                  ),
+                );
+                if (mounted) _refresh();
+              }
+            },
+          ),
+        ],
       );
     }
 
     return RefreshIndicator(
-      onRefresh: () async => _refresh(),
+      onRefresh: _refresh,
       child: ListView.separated(
-        padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
+        padding: EdgeInsets.fromLTRB(16, 8, 16, 24),
         itemCount: events.length,
-        separatorBuilder: (_, __) => const SizedBox(height: 12),
+        separatorBuilder: (_, __) => SizedBox(height: 12),
         itemBuilder: (context, index) {
           final event = events[index];
-          return _EventCard(
+          return EventCard(
             event: event,
             onTap: () {
               Navigator.of(context)
@@ -126,7 +174,7 @@ class _EventListScreenState extends State<EventListScreen> {
                     ),
                   )
                   .then((changed) {
-                    if (changed == true && mounted) {
+                    if (mounted) {
                       _refresh();
                     }
                   });
@@ -134,154 +182,6 @@ class _EventListScreenState extends State<EventListScreen> {
           );
         },
       ),
-    );
-  }
-
-  Future<LatLng> _resolveCurrentLocation() async {
-    try {
-      final serviceEnabled = await Geolocator.isLocationServiceEnabled();
-      if (!serviceEnabled) {
-        return _ukraineCenter;
-      }
-
-      var permission = await Geolocator.checkPermission();
-      if (permission == LocationPermission.denied) {
-        permission = await Geolocator.requestPermission();
-      }
-
-      if (permission == LocationPermission.denied ||
-          permission == LocationPermission.deniedForever) {
-        return _ukraineCenter;
-      }
-
-      final position = await Geolocator.getCurrentPosition(
-        locationSettings: const LocationSettings(
-          accuracy: LocationAccuracy.high,
-          timeLimit: Duration(seconds: 8),
-        ),
-      );
-
-      return LatLng(position.latitude, position.longitude);
-    } catch (_) {
-      return _ukraineCenter;
-    }
-  }
-}
-
-class _EventCard extends StatelessWidget {
-  const _EventCard({required this.event, required this.onTap});
-
-  final Event event;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final formatter = DateFormat('dd.MM.yyyy HH:mm');
-
-    return Card(
-      child: InkWell(
-        borderRadius: BorderRadius.circular(8),
-        onTap: onTap,
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(
-                    child: Text(
-                      event.title,
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w800,
-                        color: Theme.of(context).colorScheme.onSurface,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Chip(
-                    label: Text(categoryLabel(event.category)),
-                    visualDensity: VisualDensity.compact,
-                  ),
-                ],
-              ),
-              const SizedBox(height: 8),
-              Text(
-                event.description,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-              ),
-              const SizedBox(height: 12),
-              Wrap(
-                spacing: 12,
-                runSpacing: 8,
-                children: [
-                  _Meta(icon: Icons.place_outlined, text: event.locationName),
-                  _Meta(
-                    icon: Icons.schedule,
-                    text: _formatRange(formatter, event),
-                  ),
-                  if (event.distanceMeters != null)
-                    _Meta(
-                      icon: Icons.near_me_outlined,
-                      text: _formatDistance(event.distanceMeters!),
-                    ),
-                  _Meta(
-                    icon: Icons.group_outlined,
-                    text: _participantsText(event),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  String _formatRange(DateFormat formatter, Event event) {
-    final start = formatter.format(event.startsAt.toLocal());
-    final end =
-        event.endsAt == null ? null : formatter.format(event.endsAt!.toLocal());
-
-    return end == null ? start : '$start - $end';
-  }
-
-  String _formatDistance(double meters) {
-    if (meters < 1000) {
-      return '${meters.round()} м';
-    }
-
-    return '${(meters / 1000).toStringAsFixed(1)} км';
-  }
-
-  String _participantsText(Event event) {
-    final maxParticipants = event.maxParticipants;
-
-    if (maxParticipants == null) {
-      return '${event.participantCount}';
-    }
-
-    return '${event.participantCount}/$maxParticipants';
-  }
-}
-
-class _Meta extends StatelessWidget {
-  const _Meta({required this.icon, required this.text});
-
-  final IconData icon;
-  final String text;
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Icon(icon, size: 18, color: AppColors.rosyGranite),
-        const SizedBox(width: 4),
-        Flexible(child: Text(text)),
-      ],
     );
   }
 }
@@ -301,18 +201,22 @@ class _MessageState extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(24),
+        padding: EdgeInsets.all(24),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(icon, size: 48, color: AppColors.rosyGranite),
-            const SizedBox(height: 12),
+            Icon(
+              icon,
+              size: 48,
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
+            SizedBox(height: 12),
             Text(text, textAlign: TextAlign.center),
-            const SizedBox(height: 12),
+            SizedBox(height: 12),
             OutlinedButton.icon(
               onPressed: action,
-              icon: const Icon(Icons.refresh),
-              label: const Text('Оновити'),
+              icon: Icon(Icons.refresh),
+              label: Text(context.l10n.refresh),
             ),
           ],
         ),

@@ -1,14 +1,12 @@
 import 'package:flutter/material.dart';
 
-import '../constants/app_colors.dart';
-
 void showErrorSnackBar(BuildContext context, String message) {
   _showAppSnackBar(
     context,
     message: message,
     icon: Icons.info_outline,
-    backgroundColor: const Color(0xFFF8E7E4),
-    foregroundColor: const Color(0xFF7D2E2A),
+    backgroundColor: Theme.of(context).colorScheme.errorContainer,
+    foregroundColor: Theme.of(context).colorScheme.onErrorContainer,
   );
 }
 
@@ -17,8 +15,14 @@ void showSuccessSnackBar(BuildContext context, String message) {
     context,
     message: message,
     icon: Icons.check_circle_outline,
-    backgroundColor: const Color(0xFFE3F2E7),
-    foregroundColor: AppColors.leaf,
+    backgroundColor:
+        Theme.of(context).brightness == Brightness.dark
+            ? const Color(0xFF243C2A)
+            : const Color(0xFFE3EEDF),
+    foregroundColor:
+        Theme.of(context).brightness == Brightness.dark
+            ? const Color(0xFFB7DDB1)
+            : const Color(0xFF2F5634),
   );
 }
 
@@ -56,4 +60,3 @@ void _showAppSnackBar(
     ),
   );
 }
-

@@ -1,13 +1,14 @@
+import 'package:joicrememory/l10n/localization.dart';
 import 'package:flutter/material.dart';
 
 import '../../../core/network/api_error_message.dart';
-import '../../../core/session/app_session.dart';
+import '../../auth/presentation/controllers/auth_controller.dart';
 import '../../../core/ui/app_snack_bar.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key, required this.session});
 
-  final AppSession session;
+  final AuthController session;
 
   @override
   State<RegisterScreen> createState() => _RegisterScreenState();
@@ -45,7 +46,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
       if (!mounted) {
         return;
       }
-      showErrorSnackBar(context, apiErrorMessage(error));
+      showErrorSnackBar(
+        context,
+        context.localizeMessage(apiErrorMessage(error)),
+      );
     }
   }
 
@@ -54,19 +58,19 @@ class _RegisterScreenState extends State<RegisterScreen> {
     final colorScheme = Theme.of(context).colorScheme;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Реєстрація')),
+      appBar: AppBar(title: Text(context.l10n.registration)),
       body: SafeArea(
         child: LayoutBuilder(
           builder: (context, constraints) {
             return SingleChildScrollView(
-              padding: const EdgeInsets.all(24),
+              padding: EdgeInsets.all(24),
               child: ConstrainedBox(
                 constraints: BoxConstraints(
                   minHeight: constraints.maxHeight - 48,
                 ),
                 child: Center(
                   child: ConstrainedBox(
-                    constraints: const BoxConstraints(maxWidth: 420),
+                    constraints: BoxConstraints(maxWidth: 420),
                     child: Form(
                       key: _formKey,
                       child: Column(
@@ -78,9 +82,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             size: 58,
                             color: colorScheme.primary,
                           ),
-                          const SizedBox(height: 16),
+                          SizedBox(height: 16),
                           Text(
-                            'Створити акаунт',
+                            context.l10n.createAccount,
                             textAlign: TextAlign.center,
                             style: Theme.of(
                               context,
@@ -89,65 +93,67 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               color: colorScheme.onSurface,
                             ),
                           ),
-                          const SizedBox(height: 8),
+                          SizedBox(height: 8),
                           Text(
-                            'Зареєструйся, щоб створювати ініціативи та долучатися до подій поруч.',
+                            context
+                                .l10n
+                                .signUpToCreateInitiativesAndJoinNearbyEvents,
                             textAlign: TextAlign.center,
                             style: Theme.of(context).textTheme.bodyMedium
                                 ?.copyWith(color: colorScheme.onSurfaceVariant),
                           ),
-                          const SizedBox(height: 28),
+                          SizedBox(height: 28),
                           TextFormField(
                             controller: _nameController,
-                            decoration: const InputDecoration(
-                              labelText: 'Імʼя',
-                              hintText: 'Наприклад, Анна Петренко',
+                            decoration: InputDecoration(
+                              labelText: context.l10n.name,
+                              hintText: context.l10n.forExampleAnnaPetrenko,
                               prefixIcon: Icon(Icons.person_outline),
                             ),
                             validator:
                                 (value) =>
                                     value == null || value.trim().length < 2
-                                        ? 'Введи імʼя'
+                                        ? context.l10n.enterYourName
                                         : null,
                           ),
-                          const SizedBox(height: 14),
+                          SizedBox(height: 14),
                           TextFormField(
                             controller: _emailController,
                             keyboardType: TextInputType.emailAddress,
-                            decoration: const InputDecoration(
-                              labelText: 'Пошта',
+                            decoration: InputDecoration(
+                              labelText: context.l10n.email53,
                               hintText: 'name@example.com',
                               prefixIcon: Icon(Icons.mail_outline),
                             ),
                             validator:
                                 (value) =>
                                     value == null || !value.contains('@')
-                                        ? 'Введи пошту'
+                                        ? context.l10n.enterYourEmail
                                         : null,
                           ),
-                          const SizedBox(height: 14),
+                          SizedBox(height: 14),
                           TextFormField(
                             controller: _passwordController,
                             obscureText: true,
-                            decoration: const InputDecoration(
-                              labelText: 'Пароль',
-                              hintText: 'Мінімум 6 символів',
+                            decoration: InputDecoration(
+                              labelText: context.l10n.password,
+                              hintText: context.l10n.atLeastCharacters309,
                               prefixIcon: Icon(Icons.lock_outline),
                             ),
                             validator:
                                 (value) =>
                                     value == null || value.length < 6
-                                        ? 'Мінімум 6 символів'
+                                        ? context.l10n.atLeastCharacters309
                                         : null,
                           ),
-                          const SizedBox(height: 22),
+                          SizedBox(height: 22),
                           ElevatedButton.icon(
                             onPressed: widget.session.isBusy ? null : _submit,
-                            icon: const Icon(Icons.person_add_alt),
+                            icon: Icon(Icons.person_add_alt),
                             label: Text(
                               widget.session.isBusy
-                                  ? 'Зачекай...'
-                                  : 'Зареєструватися',
+                                  ? context.l10n.pleaseWait310
+                                  : context.l10n.signUp,
                             ),
                           ),
                         ],

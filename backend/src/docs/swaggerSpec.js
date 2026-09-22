@@ -106,6 +106,7 @@ const swaggerSpec = {
         type: 'object',
         required: ['title', 'description', 'category', 'locationName', 'latitude', 'longitude', 'startsAt'],
         properties: {
+          status: { type: 'string', enum: ['draft', 'published'], default: 'published' },
           title: { type: 'string', example: 'Прибирання парку' },
           description: { type: 'string', example: 'Збираємося, щоб прибрати територію парку після вихідних.' },
           category: { type: 'string', example: 'cleanup' },
@@ -117,6 +118,16 @@ const swaggerSpec = {
           endsAt: { type: 'string', format: 'date-time', nullable: true, example: '2026-06-01T13:00:00.000Z' },
           maxParticipants: { type: 'integer', nullable: true, example: 30 },
           imageUrl: { type: 'string', nullable: true }
+        }
+      },
+      UpdateEventInput: {
+        type: 'object',
+        description: 'Partial event fields; only draft→published/cancelled and published→completed/cancelled transitions are allowed. Terminal events cannot be edited.',
+        properties: {
+          status: { type: 'string', enum: ['draft', 'published', 'completed', 'cancelled'] },
+          title: { type: 'string' }, description: { type: 'string' },
+          startsAt: { type: 'string', format: 'date-time' }, endsAt: { type: 'string', format: 'date-time', nullable: true },
+          maxParticipants: { type: 'integer', nullable: true }
         }
       },
       UpdateProfileInput: {
@@ -267,6 +278,9 @@ const swaggerSpec = {
           { name: 'longitude', in: 'query', schema: { type: 'number' } },
           { name: 'radiusMeters', in: 'query', schema: { type: 'integer', default: 10000 } },
           { name: 'category', in: 'query', schema: { type: 'string' } },
+          { name: 'categories', in: 'query', description: 'Comma-separated category keys; matches any selected category and takes precedence over category.', schema: { type: 'string' } },
+          { name: 'startsFrom', in: 'query', description: 'Inclusive lower bound for event start (UTC ISO 8601).', schema: { type: 'string', format: 'date-time' } },
+          { name: 'startsBefore', in: 'query', description: 'Exclusive upper bound for event start (UTC ISO 8601).', schema: { type: 'string', format: 'date-time' } },
           { name: 'search', in: 'query', schema: { type: 'string' } },
           { name: 'limit', in: 'query', schema: { type: 'integer', default: 20 } },
           { name: 'offset', in: 'query', schema: { type: 'integer', default: 0 } }
@@ -288,6 +302,18 @@ const swaggerSpec = {
         responses: { 201: { description: 'Created event' } }
       }
     },
+    '/events/drafts': {
+      post: {
+        tags: ['Events'],
+        summary: 'Save a private draft; never publishes or creates a chat',
+        security: [{ bearerAuth: [] }, { devFirebaseUid: [] }],
+        requestBody: {
+          required: true,
+          content: { 'application/json': { schema: { $ref: '#/components/schemas/CreateEventInput' } } }
+        },
+        responses: { 201: { description: 'Private draft saved' } }
+      }
+    },
     '/events/mine': {
       get: {
         tags: ['Events'],
@@ -299,7 +325,7 @@ const swaggerSpec = {
     '/events/{id}': {
       get: {
         tags: ['Events'],
-        summary: 'Get event by id',
+        summary: 'Get event by id (drafts require owner authentication)',
         parameters: [{ name: 'id', in: 'path', required: true, schema: { type: 'string', format: 'uuid' } }],
         responses: { 200: { description: 'Event' } }
       },
@@ -312,7 +338,7 @@ const swaggerSpec = {
           required: true,
           content: {
             'application/json': {
-              schema: { $ref: '#/components/schemas/CreateEventInput' }
+              schema: { $ref: '#/components/schemas/UpdateEventInput' }
             }
           }
         },

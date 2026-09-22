@@ -1,0 +1,618 @@
+{
+  "@@locale": "en",
+  "reports": "Reports",
+  "couldNotGenerateTheReport": "Could not generate the report.",
+  "createdEvents": "Created events",
+  "youHavenTCreatedAnyEventsYet": "You haven't created any events yet.",
+  "myParticipation": "My participation",
+  "youHavenTJoinedAnyEventsYet": "You haven't joined any events yet.",
+  "personalReport": "Personal report",
+  "updated": "Updated {arg0}",
+  "@updated": {
+    "placeholders": {
+      "arg0": {
+        "type": "String"
+      }
+    }
+  },
+  "preparingPdf": "Preparing PDF...",
+  "generateAndPrintPdf": "Generate and print PDF",
+  "created": "Created",
+  "joined": "Joined",
+  "participants": "Participants",
+  "fillRate": "Fill rate",
+  "plannedHrs": "Planned hrs",
+  "upcoming": "Upcoming",
+  "myContribution": "My contribution",
+  "eventsByCategory": "Events by category",
+  "noChartDataYet": "No chart data yet.",
+  "activity": "Activity",
+  "created20": "Created",
+  "upcoming21": "Upcoming",
+  "ended": "Ended",
+  "thePdfWillIncludeMoreEvents": "The PDF will include {arg0} more events.",
+  "@thePdfWillIncludeMoreEvents": {
+    "placeholders": {
+      "arg0": {
+        "type": "String"
+      }
+    }
+  },
+  "hrs": "{arg0} hrs",
+  "@hrs": {
+    "placeholders": {
+      "arg0": {
+        "type": "String"
+      }
+    }
+  },
+  "noEndTime": "no end time",
+  "tryAgain": "Try again",
+  "eventsTheUserHasJoined": "Events the user has joined",
+  "joicrememoryReport": "JoicreMemory report",
+  "user": "User: {arg0}",
+  "@user": {
+    "placeholders": {
+      "arg0": {
+        "type": "String"
+      }
+    }
+  },
+  "email": "Email: {arg0}",
+  "@email": {
+    "placeholders": {
+      "arg0": {
+        "type": "String"
+      }
+    }
+  },
+  "generated": "Generated: {arg0}",
+  "@generated": {
+    "placeholders": {
+      "arg0": {
+        "type": "String"
+      }
+    }
+  },
+  "summary": "Summary",
+  "metric": "Metric",
+  "value": "Value",
+  "eventsCreated": "Events created",
+  "eventsJoined": "Events joined",
+  "participantsInMyEvents": "Participants in my events",
+  "averageFillRate": "Average fill rate",
+  "plannedHoursEventsWithAnEndTime": "Planned hours (events with an end time)",
+  "upcomingEvents": "Upcoming events",
+  "completedEvents": "Completed events",
+  "categories": "Categories",
+  "noCategoryDataYet": "No category data yet.",
+  "category": "Category",
+  "participants45": "Participants",
+  "noEventsInThisSection": "No events in this section.",
+  "title": "Title",
+  "date": "Date",
+  "place": "Place",
+  "participants50": "Participants: {arg0}",
+  "@participants50": {
+    "placeholders": {
+      "arg0": {
+        "type": "String"
+      }
+    }
+  },
+  "noParticipantsYet": "No participants yet.",
+  "name": "Name",
+  "email53": "Email",
+  "role": "Role",
+  "dateJoined": "Date joined",
+  "organizer": "Organizer",
+  "participant": "Participant",
+  "noEndTime58": "{arg0} (no end time)",
+  "@noEndTime58": {
+    "placeholders": {
+      "arg0": {
+        "type": "String"
+      }
+    }
+  },
+  "addressFoundCheckItAndClarifyTheMeetingPointIf": "Address found. Check it and clarify the meeting point if needed.",
+  "pinSavedNoAddressFoundYouCanAddALandmark": "Pin saved. No address found — you can add a landmark manually.",
+  "pinSavedCouldNotFindTheAddressYouCanEnter": "Pin saved. Could not find the address — you can enter it manually.",
+  "mapPin": "Map pin",
+  "draftSavedToYourProfile": "Draft saved to your profile",
+  "eventPublished": "Event published",
+  "changesSaved": "Changes saved",
+  "couldNotSaveTheEvent": "Could not save the event: {arg0}",
+  "@couldNotSaveTheEvent": {
+    "placeholders": {
+      "arg0": {
+        "type": "String"
+      }
+    }
+  },
+  "newEvent": "New event",
+  "editEvent": "Edit event",
+  "draft": "Draft",
+  "saving": "Saving…",
+  "publishEvent": "Publish event",
+  "saveDraft": "Save draft",
+  "saveChanges": "Save changes",
+  "aGoodCauseStartsWithYou": "A good cause starts with you.",
+  "shareYourIdeaChooseAPlaceAndInvitePeopleTo": "Share your idea, choose a place and invite people to join.",
+  "onlyYouCanSeeThisDraftInYourProfileIt": "Only you can see this draft in your profile. It will appear on the map and in the feed, and get a chat, after you publish it. Complete the main fields to save it.",
+  "aboutTheEvent": "About the event",
+  "whatWillYouDoTogetherAndWhoIsItFor": "What will you do together, and who is it for?",
+  "eventTitle": "Event title",
+  "characters": "3–140 characters",
+  "forExampleAParkCleanup": "For example, a park cleanup",
+  "atLeastCharacters": "At least 3 characters",
+  "whatToKnow": "What to know",
+  "characters84": "10–5000 characters",
+  "thePlanWhatToBringAndWhoCanJoin": "The plan, what to bring and who can join",
+  "atLeastCharacters86": "At least 10 characters",
+  "whereWeLlMeet": "Where we'll meet",
+  "dropAPinWeLlTryToFindTheAddress": "Drop a pin — we'll try to find the address automatically.",
+  "chooseAPlaceOnTheMap": "Choose a place on the map",
+  "chooseAPlaceOnTheMap90": "Choose a place on the map",
+  "moveTheMapPin": "Move the map pin",
+  "atLeastCharacters92": "At least 2 characters",
+  "placeNameOrLandmark": "Place name or landmark",
+  "forExampleByTheMainEntrance": "For example, by the main entrance",
+  "optionalTheMapPinDefinesTheLocation": "Optional: the map pin defines the location",
+  "address": "Address",
+  "filledInAfterYouChooseAPin": "Filled in after you choose a pin",
+  "youCanEditThisOrLeaveItBlank": "You can edit this or leave it blank",
+  "timeAndParticipants": "Time and participants",
+  "helpPeoplePlanTheirVisit": "Help people plan their visit.",
+  "start": "Start",
+  "theEndMustBeAfterTheEventStarts": "The end must be after the event starts.",
+  "end": "End",
+  "notSpecified": "Not specified",
+  "withoutAnEndTimeTheChatCannotBeDeletedAutomatically": "Without an end time, the chat cannot be deleted automatically on schedule.",
+  "theEventChatWillBeDeletedAfterTheEventEnds": "The event chat will be deleted after the event ends.",
+  "leaveTheEndTimeOpen": "Leave the end time open",
+  "participantLimit": "Participant limit",
+  "forExample": "For example, 30",
+  "leaveBlankForUnlimitedParticipation": "Leave blank for unlimited participation",
+  "enterAWholeNumberFromTo": "Enter a whole number from 1 to 10000",
+  "mapLocationSelected": "Map location selected",
+  "volunteering": "Volunteering",
+  "charity": "Charity",
+  "cleanup": "Cleanup",
+  "education": "Education",
+  "community": "Community",
+  "urgent": "Urgent",
+  "other": "Other",
+  "youVeJoinedTheEvent": "You've joined the event!",
+  "leaveTheEvent": "Leave the event?",
+  "youWillBeRemovedFromTheParticipantList": "You will be removed from the participant list.",
+  "leave": "Leave",
+  "youVeLeftTheEvent": "You've left the event.",
+  "cancel": "Cancel",
+  "deleteTheEvent": "Delete the event?",
+  "theEventAndItsChatWillBeDeletedThisCannot": "The event and its chat will be deleted. This cannot be undone.",
+  "delete": "Delete",
+  "yourEvent": "Your event",
+  "publish": "Publish",
+  "completeEvent": "Complete event",
+  "cancelEvent": "Cancel event",
+  "viewParticipants": "View participants",
+  "deleteEvent": "Delete event",
+  "publishTheEvent": "Publish the event?",
+  "completeTheEvent": "Complete the event?",
+  "cancelTheEvent": "Cancel the event?",
+  "theEventWillBecomeVisibleToOtherUsers": "The event will become visible to other users.",
+  "newParticipantsWillNoLongerBeAbleToJoinThe": "New participants will no longer be able to join. The chat and its history will be deleted. The previous status cannot be restored.",
+  "confirm": "Confirm",
+  "eventStatusUpdated": "Event status updated",
+  "eventParticipants": "Event participants",
+  "couldNotLoadParticipants": "Could not load participants.",
+  "retry": "Retry",
+  "noParticipantsYet145": "No participants yet.",
+  "comingSoon": "Coming soon",
+  "happeningNow": "Happening now",
+  "today": "Today",
+  "cancelled": "Cancelled",
+  "completed": "Completed",
+  "eventDetails": "Event details",
+  "youReTheOrganizer": "You're the organizer",
+  "youReAttending": "You're attending",
+  "couldNotRefreshTheEventDetails": "Could not refresh the event details.",
+  "when": "WHEN",
+  "noEndTimeSpecified": "No end time specified",
+  "until": "Until {arg0}",
+  "@until": {
+    "placeholders": {
+      "arg0": {
+        "type": "String"
+      }
+    }
+  },
+  "where": "WHERE",
+  "theMeetingPointIsMarkedOnTheEventMap": "The meeting point is marked on the event map",
+  "meetingPointCopied": "Meeting point copied",
+  "copyLocation": "Copy location",
+  "whoSOrganizing": "Who's organizing",
+  "organizerNameUnavailable": "Organizer name unavailable",
+  "eventOrganizer": "Event organizer",
+  "joiningYou": "Joining you",
+  "noParticipantLimit": "No participant limit.",
+  "participantLimit167": "Participant limit: {arg0}",
+  "@participantLimit167": {
+    "placeholders": {
+      "arg0": {
+        "type": "String"
+      }
+    }
+  },
+  "youCanJoinAfterTheEventIsPublished": "You can join after the event is published.",
+  "registrationIsClosed": "Registration is closed.",
+  "theParticipantListWillBeAvailableAfterYouJoin": "The participant list will be available after you join.",
+  "pleaseWait": "Please wait…",
+  "refreshingEventDetails": "Refreshing event details",
+  "couldNotCheckEventDetailsAndParticipation": "Could not check event details and participation",
+  "manageEvent": "Manage event",
+  "youReOrganizingThisEvent": "You're organizing this event",
+  "youAttended": "You attended",
+  "leaveEvent": "Leave event",
+  "thisEventIsNoLongerOpenToJoin": "This event is no longer open to join",
+  "youReOnTheParticipantList": "You're on the participant list",
+  "eventCancelled": "Event cancelled",
+  "thisEventHasnTBeenPublishedYet": "This event hasn't been published yet",
+  "eventCompleted": "Event completed",
+  "participationUnavailable": "Participation unavailable",
+  "noPlacesLeft": "No places left",
+  "youCanCheckForPlacesLater": "You can check for places later",
+  "joinEvent": "Join event",
+  "bePartOfAGoodCause": "Be part of a good cause",
+  "placesAvailable": "Places available: {arg0}",
+  "@placesAvailable": {
+    "placeholders": {
+      "arg0": {
+        "type": "String"
+      }
+    }
+  },
+  "all": "All",
+  "eventLocation": "Event location",
+  "myLocation": "My location",
+  "noPinSelectedYet": "No pin selected yet",
+  "useThisLocation": "Use this location",
+  "events": "Events",
+  "refresh": "Refresh",
+  "filters": "Filters •",
+  "filters197": "Filters",
+  "noEventsNearbyYet": "No events nearby yet",
+  "createAnEventAndInvitePeopleToJoin": "Create an event and invite people to join.",
+  "tryBrowsingAllCategories": "Try browsing all categories.",
+  "createEvent": "Create event",
+  "resetFilters": "Reset filters",
+  "locationServicesAreOffShowingEventsWithoutADistanceLimit": "Location services are off. Showing events without a distance limit.",
+  "allowLocationAccessToDiscoverNearbyEvents": "Allow location access to discover nearby events.",
+  "youCanEnableLocationAccessInYourDeviceSettings": "You can enable location access in your device settings.",
+  "couldNotDetermineYourLocationShowingAvailableEvents": "Could not determine your location. Showing available events.",
+  "thisEventIsNoLongerOpenToJoin207": "This event is no longer open to join.",
+  "thereAreNoPlacesLeft": "There are no places left.",
+  "jan": "JAN",
+  "feb": "FEB",
+  "mar": "MAR",
+  "apr": "APR",
+  "may": "MAY",
+  "jun": "JUN",
+  "jul": "JUL",
+  "aug": "AUG",
+  "sep": "SEP",
+  "oct": "OCT",
+  "nov": "NOV",
+  "dec": "DEC",
+  "participants221": "participants",
+  "participant222": "participant",
+  "participants223": "participants",
+  "pastEvent": "Past event",
+  "openToEveryone": "Open to everyone",
+  "placesLeft": "Places left: {arg0}",
+  "@placesLeft": {
+    "placeholders": {
+      "arg0": {
+        "type": "String"
+      }
+    }
+  },
+  "view": "View",
+  "viewEvent": "{arg0}. {arg1}. {arg2}. {arg3}. {arg4}. {arg5}. View event.",
+  "@viewEvent": {
+    "placeholders": {
+      "arg0": {
+        "type": "String"
+      },
+      "arg1": {
+        "type": "String"
+      },
+      "arg2": {
+        "type": "String"
+      },
+      "arg3": {
+        "type": "String"
+      },
+      "arg4": {
+        "type": "String"
+      },
+      "arg5": {
+        "type": "String"
+      }
+    }
+  },
+  "m": "{arg0} m",
+  "@m": {
+    "placeholders": {
+      "arg0": {
+        "type": "String"
+      }
+    }
+  },
+  "km": "{arg0} km",
+  "@km": {
+    "placeholders": {
+      "arg0": {
+        "type": "String"
+      }
+    }
+  },
+  "theParticipantLimitMustBeGreaterThanZero": "The participant limit must be greater than zero.",
+  "couldNotUpdateTheChatAvatar": "Could not update the chat avatar: {arg0}",
+  "@couldNotUpdateTheChatAvatar": {
+    "placeholders": {
+      "arg0": {
+        "type": "String"
+      }
+    }
+  },
+  "enterTheFullImageUrl": "Enter the full image URL",
+  "theUrlMustStartWithHttpsOrHttp": "The URL must start with https:// or http://",
+  "useADirectLinkToAnImageFile": "Use a direct link to an image file",
+  "chatAvatar": "Chat avatar",
+  "avatarUrl": "Avatar URL",
+  "directUrlHttpsSiteComAvatarPng": "Direct URL: https://site.com/avatar.png",
+  "saving239": "Saving...",
+  "save": "Save",
+  "removeAvatar": "Remove avatar",
+  "addStreamApiKeyToMobileEnvAndFullyRestart": "Add STREAM_API_KEY to mobile/.env and fully restart Flutter.",
+  "theEventHasEndedItsChatIsNoLongerAvailable": "The event has ended. Its chat is no longer available.",
+  "streamChatIsNotConfiguredYet": "Stream Chat is not configured yet.",
+  "chats": "Chats",
+  "connectedAsOnlyChatsForYourEventsAppearHere": "Connected as {arg0}. Only chats for your events appear here.",
+  "@connectedAsOnlyChatsForYourEventsAppearHere": {
+    "placeholders": {
+      "arg0": {
+        "type": "String"
+      }
+    }
+  },
+  "couldNotLoadChats": "Could not load chats",
+  "yourConversationsStartHere": "Your conversations start here",
+  "joinAnEventToChatWithItsParticipants": "Join an event to chat with its participants.",
+  "findEvents": "Find events",
+  "participants251": "{arg0} · {arg1} · {arg2} participants",
+  "@participants251": {
+    "placeholders": {
+      "arg0": {
+        "type": "String"
+      },
+      "arg1": {
+        "type": "String"
+      },
+      "arg2": {
+        "type": "String"
+      }
+    }
+  },
+  "chatAvatarUpdated": "Chat avatar updated",
+  "thisEventSChatIsNoLongerAvailable": "This event's chat is no longer available.",
+  "removeParticipant": "Remove participant?",
+  "willLoseAccessToTheEventAndItsChat": "{arg0} will lose access to the event and its chat.",
+  "@willLoseAccessToTheEventAndItsChat": {
+    "placeholders": {
+      "arg0": {
+        "type": "String"
+      }
+    }
+  },
+  "remove": "Remove",
+  "participantRemovedFromTheEventAndChat": "Participant removed from the event and chat",
+  "chatMembers": "Chat members",
+  "noParticipantsYet259": "No participants yet",
+  "user260": "User",
+  "profileUpdated": "Profile updated",
+  "profile": "Profile",
+  "edit": "Edit",
+  "myActivity": "My activity",
+  "reportsAndStatistics": "Reports and statistics",
+  "myContributionParticipationAndPdfReport": "My contribution, participation and PDF report",
+  "settings": "Settings",
+  "darkTheme": "Dark theme",
+  "couldNotLoadYourEvents": "Could not load your events",
+  "eventsICreated": "Events I created",
+  "youHavenTCreatedAnyEventsYet271": "You haven't created any events yet",
+  "eventsIJoined": "Events I joined",
+  "youHavenTJoinedAnyEventsYet273": "You haven't joined any events yet",
+  "holdToSignOut": "Hold to sign out",
+  "keepHoldingToSignOut": "Keep holding to sign out",
+  "bringPeopleTogetherAroundYourIdea": "Bring people together around your idea.",
+  "chooseAnEventAndJoinItWillAppearHere": "Choose an event and join — it will appear here.",
+  "couldNotUpdateYourProfile": "Could not update your profile: {arg0}",
+  "@couldNotUpdateYourProfile": {
+    "placeholders": {
+      "arg0": {
+        "type": "String"
+      }
+    }
+  },
+  "editProfile": "Edit profile",
+  "initiativesMap": "Initiatives map",
+  "createAnInitiativeAndInvitePeople": "Create an initiative and invite people.",
+  "tryAnotherCategoryOrBrowseAllEvents": "Try another category or browse all events.",
+  "changeFilters": "Change filters",
+  "events284": "Events: {arg0}",
+  "@events284": {
+    "placeholders": {
+      "arg0": {
+        "type": "String"
+      }
+    }
+  },
+  "distanceUnavailable": "Distance unavailable",
+  "mAway": "{arg0} m away",
+  "@mAway": {
+    "placeholders": {
+      "arg0": {
+        "type": "String"
+      }
+    }
+  },
+  "kmAway": "{arg0} km away",
+  "@kmAway": {
+    "placeholders": {
+      "arg0": {
+        "type": "String"
+      }
+    }
+  },
+  "closeCard": "Close card",
+  "viewEvent289": "View event",
+  "eventFilters": "Event filters",
+  "closeFilters": "Close filters",
+  "categoriesSelectMoreThanOne": "Categories · select more than one",
+  "allCategories": "All categories",
+  "eventStartDate": "Event start date",
+  "anyDate": "Any date",
+  "clearDates": "Clear dates",
+  "radiusKm": "Radius: {arg0} km",
+  "@radiusKm": {
+    "placeholders": {
+      "arg0": {
+        "type": "String"
+      }
+    }
+  },
+  "fromYourSelectedCityOrCurrentLocation": "From your selected city or current location.",
+  "aRadiusRequiresYourLocationOrASelectedCityCurrently": "A radius requires your location or a selected city. Currently searching without a distance limit.",
+  "showEvents": "Show events",
+  "resetAllFilters": "Reset all filters",
+  "registration": "Registration",
+  "createAccount": "Create account",
+  "signUpToCreateInitiativesAndJoinNearbyEvents": "Sign up to create initiatives and join nearby events.",
+  "forExampleAnnaPetrenko": "For example, Anna Petrenko",
+  "enterYourName": "Enter your name",
+  "enterYourEmail": "Enter your email",
+  "password": "Password",
+  "atLeastCharacters309": "At least 6 characters",
+  "pleaseWait310": "Please wait...",
+  "signUp": "Sign up",
+  "initiativesEventsAndPeopleNearby": "Initiatives, events and people nearby",
+  "retryRestoringYourSession": "Retry restoring your session",
+  "enterAValidEmail": "Enter a valid email",
+  "enterYourPassword": "Enter your password",
+  "signIn": "Sign in",
+  "forgotPassword": "Forgot password?",
+  "accountCreatedSignInWithYourEmailAndPassword": "Account created. Sign in with your email and password.",
+  "passwordResetEmailSentCheckYourInboxAndSpamFolder": "Password reset email sent. Check your inbox and spam folder.",
+  "resetPassword": "Reset password",
+  "enterYourAccountEmailToReceiveAPasswordResetLink": "Enter your account email to receive a password reset link.",
+  "emailSentCheckYourSpamFolderOrResendWhenThe": "Email sent. Check your spam folder or resend when the timer ends.",
+  "sending": "Sending...",
+  "resendInS": "Resend in {arg0} s",
+  "@resendInS": {
+    "placeholders": {
+      "arg0": {
+        "type": "String"
+      }
+    }
+  },
+  "resendEmail": "Resend email",
+  "sendEmail": "Send email",
+  "couldNotSignIn": "Could not sign in.",
+  "couldNotCreateTheUser": "Could not create the user.",
+  "passwordResetIsOnlyAvailableThroughFirebaseAuth": "Password reset is only available through Firebase Auth.",
+  "thisEmailIsAlreadyInUse": "This email is already in use.",
+  "invalidEmailAddress": "Invalid email address.",
+  "thePasswordIsTooWeak": "The password is too weak.",
+  "noUserFoundWithThisEmail": "No user found with this email.",
+  "incorrectEmailOrPassword": "Incorrect email or password.",
+  "noConnectionToFirebase": "No connection to Firebase.",
+  "firebaseAuthError": "Firebase Auth error.",
+  "home": "Home",
+  "map": "Map",
+  "create": "Create",
+  "lviv": "Lviv",
+  "kyiv": "Kyiv",
+  "ivanoFrankivsk": "Ivano-Frankivsk",
+  "ternopil": "Ternopil",
+  "odesa": "Odesa",
+  "dnipro": "Dnipro",
+  "kharkiv": "Kharkiv",
+  "whereShouldWeLook": "Where should we look?",
+  "showingEventsWithinTheSelectedSearchRadius": "Showing events within the selected search radius.",
+  "nearMe": "Near me",
+  "usingYourDeviceSLocation": "Using your device's location",
+  "myProfile": "My profile",
+  "me": "Me",
+  "yourCityYourPeople": "YOUR CITY. YOUR PEOPLE.",
+  "goodThingsNstartNearby": "Good things\nstart nearby.",
+  "discoverEventsMeetPeopleNandMakeADifferenceInYour": "Discover events, meet people\nand make a difference in your city.",
+  "findAnEventOrAGoodCause": "Find an event or a good cause",
+  "clearSearch": "Clear search",
+  "whatMattersToYou": "What matters to you?",
+  "advancedFilters": "Advanced filters",
+  "all360": "All",
+  "yourCalendarIsTemporarilyUnavailable": "Your calendar is temporarily unavailable",
+  "anIdeaForYourCommunity": "AN IDEA FOR YOUR COMMUNITY?",
+  "yourEventIsHappening": "YOUR EVENT IS HAPPENING",
+  "yourEventIsToday": "YOUR EVENT IS TODAY",
+  "yourNextEvent": "YOUR NEXT EVENT",
+  "bringPeopleTogetherNforAGoodCause": "Bring people together\nfor a good cause.",
+  "createEvent367": "Create event →",
+  "couldNotLoadEvents": "Could not load events",
+  "letSFindYourCity": "Let's find your city",
+  "withoutLocationAccessWeShowEventsFromDifferentCities": "Without location access, we show events from different cities.",
+  "chooseACity": "Choose a city",
+  "noEventsMatchYourSearch": "No events match your search",
+  "itSQuietHereWantToStartSomething": "It's quiet here. Want to start something?",
+  "tryDifferentWordsOrAnotherCategory": "Try different words or another category.",
+  "createTheFirstInitiativeOrTryAnotherCity": "Create the first initiative or try another city.",
+  "thisWeekend": "This weekend",
+  "searchResults": "Search results",
+  "nearbyEvents": "Nearby events",
+  "discoverSomethingNew": "Discover something new",
+  "openMap": "Open map",
+  "loadingEvents": "Loading events",
+  "loading": "Loading",
+  "theServerDidNotRespondInTimeTryAgain": "The server did not respond in time. Try again.",
+  "noConnectionToTheServerCheckYourInternetAndTry": "No connection to the server. Check your internet and try again.",
+  "yourSessionHasExpiredSignInAgain": "Your session has expired. Sign in again.",
+  "youDonTHavePermissionToDoThis": "You don't have permission to do this.",
+  "theServiceIsTemporarilyUnavailableTryAgainLater": "The service is temporarily unavailable. Try again later.",
+  "couldNotCompleteTheRequest": "Could not complete the request.",
+  "theServerReturnedInvalidData": "The server returned invalid data.",
+  "language": "Language",
+  "systemLanguage": "Device language",
+  "draftServerUnavailable": "The server does not support saving drafts yet. Your event was not published. Try again after the server is updated.",
+  "bio": "About me",
+  "eventNotFound": "Event not found.",
+  "chatNotFound": "Chat not found.",
+  "userNotFound": "User not found.",
+  "profileNotSynced": "Your profile is not synced. Try signing in again.",
+  "validationFailed": "Check the form fields.",
+  "statusChangeUnavailable": "This status change is no longer available. Refresh the event.",
+  "completeStartedOnly": "Only an event that has started can be completed.",
+  "startMustBeFuture": "The new start time must be in the future.",
+  "endHasPassed": "The end time has already passed.",
+  "publishFutureStart": "Choose a future start time before publishing.",
+  "startedTimeLocked": "You cannot reschedule an event that has already started.",
+  "capacityBelowAttendance": "The limit cannot be lower than the number of participants.",
+  "endedParticipationLocked": "Participation in a completed event cannot be changed.",
+  "organizerCannotLeave": "The organizer cannot leave their own event.",
+  "organizerCannotBeRemoved": "The organizer cannot be removed from the event.",
+  "leaveInsteadOfRemove": "Use the leave event button instead.",
+  "notEventMember": "This user is not an event participant.",
+  "chatUnavailable": "Chat is currently unavailable. Try again later."
+}

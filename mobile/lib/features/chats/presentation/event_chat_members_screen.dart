@@ -1,10 +1,12 @@
+import 'package:joicrememory/l10n/localization.dart';
+import '../../../app/app_scope.dart';
 import 'package:flutter/material.dart';
 
 import '../../../core/network/api_error_message.dart';
-import '../../../core/session/app_session.dart';
+import '../../auth/presentation/controllers/auth_controller.dart';
 import '../../../core/ui/app_snack_bar.dart';
-import '../data/chat_member.dart';
-import '../data/event_chat.dart';
+import '../domain/entities/chat_member.dart';
+import '../domain/entities/event_chat.dart';
 
 class EventChatMembersScreen extends StatefulWidget {
   const EventChatMembersScreen({
@@ -13,7 +15,7 @@ class EventChatMembersScreen extends StatefulWidget {
     required this.chat,
   });
 
-  final AppSession session;
+  final AuthController session;
   final EventChat chat;
 
   @override
@@ -26,12 +28,16 @@ class _EventChatMembersScreenState extends State<EventChatMembersScreen> {
   @override
   void initState() {
     super.initState();
-    _membersFuture = widget.session.chatApi.listMembers(widget.chat.eventId);
+    _membersFuture = AppScope.read(
+      context,
+    ).chats.listMembers(widget.chat.eventId);
   }
 
   Future<void> _refresh() async {
     setState(() {
-      _membersFuture = widget.session.chatApi.listMembers(widget.chat.eventId);
+      _membersFuture = AppScope.read(
+        context,
+      ).chats.listMembers(widget.chat.eventId);
     });
     await _membersFuture;
   }
@@ -41,40 +47,48 @@ class _EventChatMembersScreenState extends State<EventChatMembersScreen> {
       context: context,
       builder:
           (context) => AlertDialog(
-            title: const Text('Викинути учасника?'),
+            title: Text(context.l10n.removeParticipant),
             content: Text(
-              '${member.fullName} втратить доступ до події та її чату.',
+              context.l10n.willLoseAccessToTheEventAndItsChat(
+                (member.fullName).toString(),
+              ),
             ),
             actions: [
               TextButton(
                 onPressed: () => Navigator.of(context).pop(false),
-                child: const Text('Скасувати'),
+                child: Text(context.l10n.cancel),
               ),
               FilledButton(
                 onPressed: () => Navigator.of(context).pop(true),
-                child: const Text('Викинути'),
+                child: Text(context.l10n.remove),
               ),
             ],
           ),
     );
 
-    if (confirmed != true) {
+    if (confirmed != true || !mounted) {
       return;
     }
 
     try {
-      await widget.session.chatApi.kickMember(
-        eventId: widget.chat.eventId,
-        userId: member.userId,
-      );
+      await AppScope.read(
+        context,
+      ).chats.kickMember(eventId: widget.chat.eventId, userId: member.userId);
+      if (!mounted) return;
       await _refresh();
 
       if (mounted) {
-        showSuccessSnackBar(context, 'Учасника видалено з події та чату');
+        showSuccessSnackBar(
+          context,
+          context.l10n.participantRemovedFromTheEventAndChat,
+        );
       }
     } catch (error) {
       if (mounted) {
-        showErrorSnackBar(context, apiErrorMessage(error));
+        showErrorSnackBar(
+          context,
+          context.localizeMessage(apiErrorMessage(error)),
+        );
       }
     }
   }
@@ -84,7 +98,7 @@ class _EventChatMembersScreenState extends State<EventChatMembersScreen> {
     final currentUserId = widget.session.currentUser?.id;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Учасники чату')),
+      appBar: AppBar(title: Text(context.l10n.chatMembers)),
       body: SafeArea(
         child: RefreshIndicator(
           onRefresh: _refresh,
@@ -92,7 +106,7 @@ class _EventChatMembersScreenState extends State<EventChatMembersScreen> {
             future: _membersFuture,
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(child: CircularProgressIndicator());
+                return Center(child: CircularProgressIndicator());
               }
 
               final members = snapshot.data ?? [];
@@ -100,14 +114,14 @@ class _EventChatMembersScreenState extends State<EventChatMembersScreen> {
               if (members.isEmpty) {
                 return ListView(
                   children: [
-                    const SizedBox(height: 160),
-                    const Center(child: Text('Учасників ще немає')),
+                    SizedBox(height: 160),
+                    Center(child: Text(context.l10n.noParticipantsYet259)),
                   ],
                 );
               }
 
               return ListView.separated(
-                padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
+                padding: EdgeInsets.fromLTRB(16, 8, 16, 24),
                 itemBuilder: (context, index) {
                   final member = members[index];
                   final avatarUrl = member.avatarUrl;
@@ -131,20 +145,22 @@ class _EventChatMembersScreenState extends State<EventChatMembersScreen> {
                       ),
                       title: Text(member.fullName),
                       subtitle: Text(
-                        member.isOrganizer ? 'Організатор' : 'Учасник',
+                        member.isOrganizer
+                            ? context.l10n.organizer
+                            : context.l10n.participant,
                       ),
                       trailing:
                           canKick
                               ? IconButton(
                                 onPressed: () => _kick(member),
-                                icon: const Icon(Icons.person_remove_outlined),
-                                tooltip: 'Викинути',
+                                icon: Icon(Icons.person_remove_outlined),
+                                tooltip: context.l10n.remove,
                               )
                               : null,
                     ),
                   );
                 },
-                separatorBuilder: (_, _) => const SizedBox(height: 8),
+                separatorBuilder: (_, _) => SizedBox(height: 8),
                 itemCount: members.length,
               );
             },

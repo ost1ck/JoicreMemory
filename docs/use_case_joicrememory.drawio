@@ -1,0 +1,148 @@
+<mxfile host="app.diagrams.net" modified="2026-05-28T10:40:00.000Z" agent="Codex" version="26.0.0" type="device">
+  <diagram id="joicrememory-use-case" name="Рис. 4.3 Use Case">
+    <mxGraphModel dx="1422" dy="794" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1400" pageHeight="900" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="system" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#000000;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="250" y="50" width="940" height="750" as="geometry"/>
+        </mxCell>
+        <mxCell id="title" value="Мобільна система JoicreMemory" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=16;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="555" y="65" width="330" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="user" value="Користувач" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;fillColor=#FFFFFF;strokeColor=#000000;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="75" y="210" width="70" height="110" as="geometry"/>
+        </mxCell>
+        <mxCell id="organizer" value="Організатор" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;fillColor=#FFFFFF;strokeColor=#000000;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="75" y="545" width="70" height="110" as="geometry"/>
+        </mxCell>
+        <mxCell id="firebase" value="&lt;&lt;system&gt;&gt;&lt;br&gt;Firebase Auth" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="1240" y="125" width="130" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="maps" value="&lt;&lt;system&gt;&gt;&lt;br&gt;Google Maps API" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="1240" y="370" width="130" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="stream" value="&lt;&lt;system&gt;&gt;&lt;br&gt;Stream Chat SDK" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="1240" y="590" width="130" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="uc_login" value="Авторизуватися" style="ellipse;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="360" y="125" width="180" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="uc_register" value="Зареєструватися" style="ellipse;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="360" y="220" width="180" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="uc_restore" value="Відновити пароль" style="ellipse;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="360" y="315" width="180" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="uc_profile" value="Редагувати профіль" style="ellipse;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="360" y="410" width="180" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="uc_report" value="Сформувати PDF-звіт" style="ellipse;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="360" y="505" width="180" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="uc_create" value="Створити подію" style="ellipse;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="360" y="650" width="180" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="uc_map" value="Переглянути мапу подій" style="ellipse;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="650" y="125" width="200" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="uc_list" value="Переглянути список подій" style="ellipse;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="650" y="220" width="200" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="uc_details" value="Переглянути деталі події" style="ellipse;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="650" y="315" width="200" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="uc_join" value="Долучитися до події" style="ellipse;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="650" y="410" width="200" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="uc_leave" value="Вийти з події" style="ellipse;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="650" y="505" width="200" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="uc_pick" value="Обрати місце на мапі" style="ellipse;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="650" y="650" width="200" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="uc_chat" value="Спілкуватися в чаті події" style="ellipse;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="930" y="410" width="200" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="uc_delete" value="Видалити свою подію" style="ellipse;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="930" y="220" width="200" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="uc_members" value="Керувати учасниками" style="ellipse;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="930" y="505" width="200" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="uc_avatar" value="Змінити аватар чату" style="ellipse;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="930" y="600" width="200" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_user_login" style="endArrow=none;html=1;rounded=0;strokeColor=#000000;" edge="1" parent="1" source="user" target="uc_login">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_user_register" style="endArrow=none;html=1;rounded=0;strokeColor=#000000;" edge="1" parent="1" source="user" target="uc_register">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_user_restore" style="endArrow=none;html=1;rounded=0;strokeColor=#000000;" edge="1" parent="1" source="user" target="uc_restore">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_user_profile" style="endArrow=none;html=1;rounded=0;strokeColor=#000000;" edge="1" parent="1" source="user" target="uc_profile">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_user_report" style="endArrow=none;html=1;rounded=0;strokeColor=#000000;" edge="1" parent="1" source="user" target="uc_report">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_user_create" style="endArrow=none;html=1;rounded=0;strokeColor=#000000;" edge="1" parent="1" source="user" target="uc_create">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_user_map" style="endArrow=none;html=1;rounded=0;strokeColor=#000000;" edge="1" parent="1" source="user" target="uc_map">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_user_list" style="endArrow=none;html=1;rounded=0;strokeColor=#000000;" edge="1" parent="1" source="user" target="uc_list">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_user_details" style="endArrow=none;html=1;rounded=0;strokeColor=#000000;" edge="1" parent="1" source="user" target="uc_details">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_user_join" style="endArrow=none;html=1;rounded=0;strokeColor=#000000;" edge="1" parent="1" source="user" target="uc_join">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_user_leave" style="endArrow=none;html=1;rounded=0;strokeColor=#000000;" edge="1" parent="1" source="user" target="uc_leave">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_user_chat" style="endArrow=none;html=1;rounded=0;strokeColor=#000000;" edge="1" parent="1" source="user" target="uc_chat">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_org_delete" style="endArrow=none;html=1;rounded=0;strokeColor=#000000;" edge="1" parent="1" source="organizer" target="uc_delete">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_org_members" style="endArrow=none;html=1;rounded=0;strokeColor=#000000;" edge="1" parent="1" source="organizer" target="uc_members">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_org_avatar" style="endArrow=none;html=1;rounded=0;strokeColor=#000000;" edge="1" parent="1" source="organizer" target="uc_avatar">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_org_create" style="endArrow=none;html=1;rounded=0;strokeColor=#000000;" edge="1" parent="1" source="organizer" target="uc_create">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_create_pick" value="&amp;lt;&amp;lt;include&amp;gt;&amp;gt;" style="endArrow=open;endFill=0;dashed=1;html=1;rounded=0;strokeColor=#000000;fontSize=12;" edge="1" parent="1" source="uc_create" target="uc_pick">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_login_firebase" style="endArrow=none;html=1;rounded=0;strokeColor=#000000;" edge="1" parent="1" source="firebase" target="uc_login">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_restore_firebase" style="endArrow=none;html=1;rounded=0;strokeColor=#000000;" edge="1" parent="1" source="firebase" target="uc_restore">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_map_maps" style="endArrow=none;html=1;rounded=0;strokeColor=#000000;" edge="1" parent="1" source="maps" target="uc_map">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_pick_maps" style="endArrow=none;html=1;rounded=0;strokeColor=#000000;" edge="1" parent="1" source="maps" target="uc_pick">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_chat_stream" style="endArrow=none;html=1;rounded=0;strokeColor=#000000;" edge="1" parent="1" source="stream" target="uc_chat">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_avatar_stream" style="endArrow=none;html=1;rounded=0;strokeColor=#000000;" edge="1" parent="1" source="stream" target="uc_avatar">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

@@ -10,6 +10,7 @@ function mapChat(row) {
     eventTitle: row.event_title,
     locationName: row.location_name,
     startsAt: row.starts_at,
+    endsAt: row.ends_at,
     status: row.status,
     creatorUserId: row.creator_user_id,
     streamChannelId: row.stream_channel_id,
@@ -42,6 +43,7 @@ async function listByUser(userId) {
         e.title AS event_title,
         e.location_name,
         e.starts_at,
+        e.ends_at,
         e.status,
         e.creator_user_id,
         chat.stream_channel_id,
@@ -57,7 +59,8 @@ async function listByUser(userId) {
       LEFT JOIN event_participants participants
         ON participants.event_id = e.id
        AND participants.status = 'joined'
-      WHERE e.status IN ('published', 'completed')
+      WHERE e.status = 'published'
+        AND (e.ends_at IS NULL OR e.ends_at > NOW())
       GROUP BY e.id, chat.id, current_user_participation.role
       ORDER BY e.starts_at ASC
     `,
@@ -75,6 +78,7 @@ async function findByEventId(eventId) {
         e.title AS event_title,
         e.location_name,
         e.starts_at,
+        e.ends_at,
         e.status,
         e.creator_user_id,
         chat.stream_channel_id,

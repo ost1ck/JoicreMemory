@@ -1,8 +1,10 @@
+const db = require('../config/db');
 const userRepository = require('../repositories/userRepository');
 const eventRepository = require('../repositories/eventRepository');
 const chatRepository = require('../repositories/chatRepository');
 const streamService = require('./streamService');
 const ApiError = require('../utils/apiError');
+const lifecycle = require('./eventLifecycleService');
 
 async function requireSyncedUser(auth) {
   const user = await userRepository.findByFirebaseUid(auth.firebaseUid);
@@ -15,6 +17,10 @@ async function requireSyncedUser(auth) {
 }
 
 async function requireChatMember(eventId, user) {
+  const event = await eventRepository.findById(eventId);
+  if (!event || event.status !== 'published' || (event.endsAt && new Date(event.endsAt) <= new Date())) {
+    throw new ApiError(410, 'Подія завершена. Чат більше недоступний.');
+  }
   const participation = await eventRepository.findParticipant(eventId, user.id);
 
   if (!participation || participation.status !== 'joined') {
@@ -65,10 +71,13 @@ async function getCurrentUserStreamToken(auth) {
 
 async function listCurrentUserChats(auth) {
   const user = await requireSyncedUser(auth);
+  await lifecycle.cleanup();
   const chats = await chatRepository.listByUser(user.id);
 
-  await Promise.all(
-    chats.map(async (chat) => {
+  const active = await Promise.all(
+    chats.map(chat => db.withEventLock(chat.eventId, async () => {
+      const current = await eventRepository.findById(chat.eventId);
+      if (!current || current.status !== 'published' || (current.endsAt && new Date(current.endsAt) <= new Date())) return null;
       const creator = await userRepository.findById(chat.creatorUserId);
 
       await streamService.upsertUsers([creator, user]);
@@ -81,10 +90,11 @@ async function listCurrentUserChats(auth) {
         image: chat.avatarUrl,
         memberStreamUserIds: [user.streamUserId || user.firebaseUid]
       });
-    })
+      return chat;
+    }))
   );
 
-  return chats;
+  return active.filter(Boolean);
 }
 
 async function listChatMembers(auth, eventId) {

@@ -1,3 +1,5 @@
+const { AsyncLocalStorage } = require('node:async_hooks');
+const transactions = new AsyncLocalStorage();
 const { Pool } = require('pg');
 const env = require('./env');
 
@@ -32,6 +34,17 @@ pool.on('error', (error) => {
 });
 
 module.exports = {
-  query: (text, params) => pool.query(text, params),
+  query: (text, params) => (transactions.getStore() || pool).query(text, params),
+  async withEventLock(id, action) {
+    const client = await pool.connect();
+    try {
+      await client.query('BEGIN');
+      await client.query('SELECT id FROM events WHERE id = $1 FOR UPDATE', [id]);
+      const result = await transactions.run(client, action);
+      await client.query('COMMIT');
+      return result;
+    } catch (error) { await client.query('ROLLBACK'); throw error; }
+    finally { client.release(); }
+  },
   pool
 };

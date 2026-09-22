@@ -1,9 +1,16 @@
+import '../../../core/localization/language_selector.dart';
+import 'package:joicrememory/l10n/localization.dart';
+import '../../../core/ui/loading_skeleton.dart';
+import '../../../core/ui/empty_state.dart';
+import '../../../core/network/api_error_message.dart';
+import '../../events/presentation/create_event_screen.dart';
+import '../../events/presentation/event_list_screen.dart';
+import '../../../app/app_scope.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
+import '../../events/presentation/widgets/event_card.dart';
 
-import '../../../core/constants/app_colors.dart';
-import '../../../core/session/app_session.dart';
-import '../../events/data/event.dart';
+import '../../auth/presentation/controllers/auth_controller.dart';
+import '../../events/domain/entities/event.dart';
 import '../../events/presentation/event_details_screen.dart';
 import '../../reports/presentation/reports_screen.dart';
 import 'edit_profile_screen.dart';
@@ -15,7 +22,7 @@ class ProfileScreen extends StatefulWidget {
     required this.refreshSignal,
   });
 
-  final AppSession session;
+  final AuthController session;
   final int refreshSignal;
 
   @override
@@ -28,7 +35,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   void initState() {
     super.initState();
-    _eventsFuture = widget.session.eventApi.listMyEvents();
+    _eventsFuture = AppScope.read(context).events.listMyEvents();
   }
 
   @override
@@ -42,7 +49,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   void _refreshEvents() {
     setState(() {
-      _eventsFuture = widget.session.eventApi.listMyEvents();
+      _eventsFuture = AppScope.read(context).events.listMyEvents();
     });
   }
 
@@ -57,8 +64,30 @@ class _ProfileScreenState extends State<ProfileScreen> {
       setState(() {});
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(const SnackBar(content: Text('Профіль оновлено')));
+      ).showSnackBar(SnackBar(content: Text(context.l10n.profileUpdated)));
     }
+  }
+
+  Future<void> _createEvent() async {
+    await Navigator.of(context).push(
+      MaterialPageRoute(
+        builder:
+            (routeContext) => CreateEventScreen(
+              session: widget.session,
+              onCreated: () => Navigator.pop(routeContext),
+            ),
+      ),
+    );
+    if (mounted) _refreshEvents();
+  }
+
+  Future<void> _findEvents() async {
+    await Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => EventListScreen(session: widget.session),
+      ),
+    );
+    if (mounted) _refreshEvents();
   }
 
   void _openReports() {
@@ -73,12 +102,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Профіль'),
+        title: Text(context.l10n.profile),
         actions: [
           IconButton(
             onPressed: _editProfile,
-            icon: const Icon(Icons.edit_outlined),
-            tooltip: 'Редагувати',
+            icon: Icon(Icons.edit_outlined),
+            tooltip: context.l10n.edit,
           ),
         ],
       ),
@@ -86,44 +115,59 @@ class _ProfileScreenState extends State<ProfileScreen> {
         child: RefreshIndicator(
           onRefresh: () async => _refreshEvents(),
           child: ListView(
-            padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
+            padding: EdgeInsets.fromLTRB(24, 16, 24, 32),
             children: [
               _ProfileHeader(
-                fullName: user?.fullName ?? 'Користувач',
+                fullName: user?.fullName ?? context.l10n.user260,
                 email: user?.email ?? '',
                 bio: user?.bio,
                 avatarUrl: user?.avatarUrl,
               ),
-              const SizedBox(height: 12),
-              Card(
-                child: SwitchListTile(
-                  secondary: const Icon(Icons.dark_mode_outlined),
-                  title: const Text('Темна тема'),
-                  value: widget.session.isDarkTheme,
-                  onChanged: widget.session.setDarkTheme,
+              SizedBox(height: 28),
+              _ProfileSectionHeading(context.l10n.myActivity),
+              ListTile(
+                contentPadding: EdgeInsets.zero,
+                leading: Icon(Icons.analytics_outlined),
+                title: Text(context.l10n.reportsAndStatistics),
+                subtitle: Text(
+                  context.l10n.myContributionParticipationAndPdfReport,
                 ),
+                trailing: Icon(Icons.chevron_right),
+                onTap: _openReports,
               ),
-              const SizedBox(height: 12),
-              Card(
-                child: ListTile(
-                  leading: const Icon(Icons.analytics_outlined),
-                  title: const Text('Звіти'),
-                  subtitle: const Text('Аналітика, PDF та друк'),
-                  trailing: const Icon(Icons.chevron_right),
-                  onTap: _openReports,
-                ),
+              Divider(height: 32),
+              _ProfileSectionHeading(context.l10n.settings),
+              const LanguageSelector(),
+              ListenableBuilder(
+                listenable: AppScope.read(context).theme,
+                builder:
+                    (context, _) => SwitchListTile(
+                      contentPadding: EdgeInsets.zero,
+                      secondary: Icon(Icons.dark_mode_outlined),
+                      title: Text(context.l10n.darkTheme),
+                      value: AppScope.read(context).theme.isDark,
+                      onChanged: AppScope.read(context).theme.setDark,
+                    ),
               ),
-              const SizedBox(height: 12),
+              Divider(height: 32),
               FutureBuilder<List<Event>>(
                 future: _eventsFuture,
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Padding(
-                      padding: EdgeInsets.all(32),
-                      child: Center(child: CircularProgressIndicator()),
-                    );
+                    return LoadingSkeleton();
                   }
 
+                  if (snapshot.hasError) {
+                    return EmptyState(
+                      title: context.l10n.couldNotLoadYourEvents,
+                      message: context.localizeMessage(
+                        apiErrorMessage(snapshot.error!),
+                      ),
+                      actionLabel: context.l10n.tryAgain,
+                      onAction: _refreshEvents,
+                      icon: Icons.cloud_off_outlined,
+                    );
+                  }
                   final events = snapshot.data ?? [];
                   final created =
                       events
@@ -135,25 +179,32 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           .toList();
 
                   return Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       _EventSection(
-                        title: 'Мої створені події',
-                        emptyText: 'Ти ще не створював подій',
+                        title: context.l10n.eventsICreated,
+                        actionLabel: context.l10n.createEvent,
+                        onAction: _createEvent,
+                        emptyText: context.l10n.youHavenTCreatedAnyEventsYet271,
                         events: created,
+                        onChanged: _refreshEvents,
                         session: widget.session,
                       ),
-                      const SizedBox(height: 12),
+                      SizedBox(height: 12),
                       _EventSection(
-                        title: 'Я учасник',
-                        emptyText: 'Ти ще не долучався до подій',
+                        title: context.l10n.eventsIJoined,
+                        actionLabel: context.l10n.findEvents,
+                        onAction: _findEvents,
+                        emptyText: context.l10n.youHavenTJoinedAnyEventsYet273,
                         events: joined,
+                        onChanged: _refreshEvents,
                         session: widget.session,
                       ),
                     ],
                   );
                 },
               ),
-              const SizedBox(height: 12),
+              Divider(height: 40),
               _HoldToLogoutButton(onConfirmed: widget.session.signOut),
             ],
           ),
@@ -183,7 +234,7 @@ class _HoldToLogoutButtonState extends State<_HoldToLogoutButton>
     super.initState();
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 2500),
+      duration: Duration(milliseconds: 2500),
     )..addStatusListener((status) {
       if (status == AnimationStatus.completed && !_didConfirm) {
         _didConfirm = true;
@@ -223,7 +274,7 @@ class _HoldToLogoutButtonState extends State<_HoldToLogoutButton>
 
     return Semantics(
       button: true,
-      label: 'Затисни, щоб вийти',
+      label: context.l10n.holdToSignOut,
       child: Listener(
         onPointerDown: (_) => _startHold(),
         onPointerUp: (_) => _cancelHold(),
@@ -236,12 +287,7 @@ class _HoldToLogoutButtonState extends State<_HoldToLogoutButton>
             return SizedBox(
               height: 52,
               child: DecoratedBox(
-                decoration: BoxDecoration(
-                  borderRadius: borderRadius,
-                  border: Border.all(
-                    color: isActive ? colorScheme.error : colorScheme.outline,
-                  ),
-                ),
+                decoration: BoxDecoration(borderRadius: borderRadius),
                 child: ClipRRect(
                   borderRadius: borderRadius,
                   child: Stack(
@@ -263,20 +309,20 @@ class _HoldToLogoutButtonState extends State<_HoldToLogoutButton>
                               color:
                                   isActive
                                       ? colorScheme.error
-                                      : colorScheme.primary,
+                                      : colorScheme.onSurfaceVariant,
                             ),
-                            const SizedBox(width: 10),
+                            SizedBox(width: 10),
                             Text(
                               _isHolding
-                                  ? 'Тримай, щоб вийти'
-                                  : 'Затисни, щоб вийти',
+                                  ? context.l10n.keepHoldingToSignOut
+                                  : context.l10n.holdToSignOut,
                               style: Theme.of(
                                 context,
                               ).textTheme.titleMedium?.copyWith(
                                 color:
                                     isActive
                                         ? colorScheme.error
-                                        : colorScheme.primary,
+                                        : colorScheme.onSurfaceVariant,
                                 fontWeight: FontWeight.w700,
                               ),
                             ),
@@ -314,124 +360,121 @@ class _ProfileHeader extends StatelessWidget {
     final hasAvatarUrl = avatarUrl != null && avatarUrl.isNotEmpty;
     final initial = fullName.trim().isEmpty ? '?' : fullName.characters.first;
 
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(18),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            CircleAvatar(
-              radius: 34,
-              backgroundColor: AppColors.shadowGrey,
-              foregroundImage: hasAvatarUrl ? NetworkImage(avatarUrl) : null,
-              onForegroundImageError: hasAvatarUrl ? (_, _) {} : null,
-              child: Text(
-                initial.toUpperCase(),
-                style: const TextStyle(color: Colors.white, fontSize: 26),
-              ),
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    fullName,
-                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.w800,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(email),
-                  if (bio != null && bio!.isNotEmpty) ...[
-                    const SizedBox(height: 10),
-                    Text(bio!),
-                  ],
-                ],
-              ),
-            ),
-          ],
+    final colors = Theme.of(context).colorScheme;
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        CircleAvatar(
+          radius: 34,
+          backgroundColor: colors.surfaceContainerHighest,
+          foregroundImage: hasAvatarUrl ? NetworkImage(avatarUrl) : null,
+          onForegroundImageError: hasAvatarUrl ? (_, _) {} : null,
+          child: Text(
+            initial.toUpperCase(),
+            style: TextStyle(color: colors.onSurface, fontSize: 26),
+          ),
         ),
-      ),
+        SizedBox(width: 18),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                fullName,
+                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+              SizedBox(height: 6),
+              Text(email, style: TextStyle(color: colors.onSurfaceVariant)),
+              if (bio != null && bio!.trim().isNotEmpty) ...[
+                SizedBox(height: 12),
+                Text(bio!),
+              ],
+            ],
+          ),
+        ),
+      ],
     );
   }
+}
+
+class _ProfileSectionHeading extends StatelessWidget {
+  const _ProfileSectionHeading(this.title);
+  final String title;
+  @override
+  Widget build(BuildContext context) => Text(
+    title,
+    style: Theme.of(
+      context,
+    ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
+  );
 }
 
 class _EventSection extends StatelessWidget {
   const _EventSection({
     required this.title,
+    required this.actionLabel,
+    required this.onAction,
+    required this.onChanged,
     required this.emptyText,
     required this.events,
     required this.session,
   });
 
   final String title;
+  final String actionLabel;
+  final VoidCallback onAction;
+  final VoidCallback onChanged;
   final String emptyText;
   final List<Event> events;
-  final AppSession session;
+  final AuthController session;
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              title,
-              style: Theme.of(
-                context,
-              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800),
-            ),
-            const SizedBox(height: 12),
-            if (events.isEmpty)
-              Text(emptyText)
-            else
-              ...events.map(
-                (event) => _ProfileEventTile(
-                  event: event,
-                  onTap: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder:
-                            (_) => EventDetailsScreen(
-                              session: session,
-                              event: event,
-                            ),
-                      ),
-                    );
-                  },
-                ),
-              ),
-          ],
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: EdgeInsets.only(top: 12, bottom: 14),
+          child: Text(
+            title,
+            style: Theme.of(
+              context,
+            ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
+          ),
         ),
-      ),
-    );
-  }
-}
-
-class _ProfileEventTile extends StatelessWidget {
-  const _ProfileEventTile({required this.event, required this.onTap});
-
-  final Event event;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final formatter = DateFormat('dd.MM HH:mm');
-
-    return ListTile(
-      contentPadding: EdgeInsets.zero,
-      onTap: onTap,
-      leading: const Icon(Icons.event_available_outlined),
-      title: Text(event.title, maxLines: 1, overflow: TextOverflow.ellipsis),
-      subtitle: Text(
-        '${event.locationName} · ${formatter.format(event.startsAt.toLocal())}',
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
-      ),
-      trailing: const Icon(Icons.chevron_right),
+        if (events.isEmpty)
+          EmptyState(
+            title: emptyText,
+            message:
+                actionLabel == context.l10n.createEvent
+                    ? context.l10n.bringPeopleTogetherAroundYourIdea
+                    : context.l10n.chooseAnEventAndJoinItWillAppearHere,
+            actionLabel: actionLabel,
+            onAction: onAction,
+          )
+        else
+          for (final event in events)
+            Padding(
+              padding: EdgeInsets.only(bottom: 14),
+              child: EventCard(
+                event: event,
+                onTap: () async {
+                  await Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder:
+                          (_) => EventDetailsScreen(
+                            session: session,
+                            event: event,
+                          ),
+                    ),
+                  );
+                  if (context.mounted) onChanged();
+                },
+              ),
+            ),
+      ],
     );
   }
 }

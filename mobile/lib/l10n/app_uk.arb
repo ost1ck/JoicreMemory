@@ -1,0 +1,618 @@
+{
+  "@@locale": "uk",
+  "reports": "Звіти",
+  "couldNotGenerateTheReport": "Не вдалося сформувати звіт.",
+  "createdEvents": "Створені події",
+  "youHavenTCreatedAnyEventsYet": "Ти ще не створював подій.",
+  "myParticipation": "Моя участь",
+  "youHavenTJoinedAnyEventsYet": "Ти ще не долучався до подій.",
+  "personalReport": "Персональний звіт",
+  "updated": "Оновлено {arg0}",
+  "@updated": {
+    "placeholders": {
+      "arg0": {
+        "type": "String"
+      }
+    }
+  },
+  "preparingPdf": "Підготовка PDF...",
+  "generateAndPrintPdf": "Сформувати і друкувати PDF",
+  "created": "Створено",
+  "joined": "Участь",
+  "participants": "Учасників",
+  "fillRate": "Заповненість",
+  "plannedHrs": "Планові год.",
+  "upcoming": "Майбутні",
+  "myContribution": "Мій внесок",
+  "eventsByCategory": "Події за категоріями",
+  "noChartDataYet": "Ще немає даних для діаграми.",
+  "activity": "Активність",
+  "created20": "Створ.",
+  "upcoming21": "Майб.",
+  "ended": "Зав.",
+  "thePdfWillIncludeMoreEvents": "У PDF буде ще {arg0} подій.",
+  "@thePdfWillIncludeMoreEvents": {
+    "placeholders": {
+      "arg0": {
+        "type": "String"
+      }
+    }
+  },
+  "hrs": "{arg0} год",
+  "@hrs": {
+    "placeholders": {
+      "arg0": {
+        "type": "String"
+      }
+    }
+  },
+  "noEndTime": "без кінця",
+  "tryAgain": "Спробувати ще раз",
+  "eventsTheUserHasJoined": "Події, де користувач є учасником",
+  "joicrememoryReport": "Звіт JoicreMemory",
+  "user": "Користувач: {arg0}",
+  "@user": {
+    "placeholders": {
+      "arg0": {
+        "type": "String"
+      }
+    }
+  },
+  "email": "Пошта: {arg0}",
+  "@email": {
+    "placeholders": {
+      "arg0": {
+        "type": "String"
+      }
+    }
+  },
+  "generated": "Сформовано: {arg0}",
+  "@generated": {
+    "placeholders": {
+      "arg0": {
+        "type": "String"
+      }
+    }
+  },
+  "summary": "Коротка аналітика",
+  "metric": "Показник",
+  "value": "Значення",
+  "eventsCreated": "Створено подій",
+  "eventsJoined": "Участь у подіях",
+  "participantsInMyEvents": "Учасників у моїх подіях",
+  "averageFillRate": "Середня заповненість",
+  "plannedHoursEventsWithAnEndTime": "Планові години (де вказано завершення)",
+  "upcomingEvents": "Майбутні події",
+  "completedEvents": "Завершені події",
+  "categories": "Категорії",
+  "noCategoryDataYet": "Даних за категоріями ще немає.",
+  "category": "Категорія",
+  "participants45": "Учасники",
+  "noEventsInThisSection": "Немає подій для цього розділу.",
+  "title": "Назва",
+  "date": "Дата",
+  "place": "Місце",
+  "participants50": "Учасники: {arg0}",
+  "@participants50": {
+    "placeholders": {
+      "arg0": {
+        "type": "String"
+      }
+    }
+  },
+  "noParticipantsYet": "Учасників ще немає.",
+  "name": "Імʼя",
+  "email53": "Пошта",
+  "role": "Роль",
+  "dateJoined": "Дата долучення",
+  "organizer": "Організатор",
+  "participant": "Учасник",
+  "noEndTime58": "{arg0} (без завершення)",
+  "@noEndTime58": {
+    "placeholders": {
+      "arg0": {
+        "type": "String"
+      }
+    }
+  },
+  "addressFoundCheckItAndClarifyTheMeetingPointIf": "Адресу визначено. Перевір її та за потреби уточни місце зустрічі.",
+  "pinSavedNoAddressFoundYouCanAddALandmark": "Точку збережено. Адресу не знайдено — можеш додати орієнтир вручну.",
+  "pinSavedCouldNotFindTheAddressYouCanEnter": "Точку збережено. Не вдалося визначити адресу — її можна уточнити вручну.",
+  "mapPin": "Точка на мапі",
+  "draftSavedToYourProfile": "Чернетку збережено у профілі",
+  "eventPublished": "Подію опубліковано",
+  "changesSaved": "Зміни збережено",
+  "couldNotSaveTheEvent": "Не вдалося створити подію: {arg0}",
+  "@couldNotSaveTheEvent": {
+    "placeholders": {
+      "arg0": {
+        "type": "String"
+      }
+    }
+  },
+  "newEvent": "Нова подія",
+  "editEvent": "Редагувати подію",
+  "draft": "Чернетка",
+  "saving": "Зберігаємо…",
+  "publishEvent": "Опублікувати подію",
+  "saveDraft": "Зберегти чернетку",
+  "saveChanges": "Зберегти зміни",
+  "aGoodCauseStartsWithYou": "Хороша справа починається з тебе.",
+  "shareYourIdeaChooseAPlaceAndInvitePeopleTo": "Розкажи про ідею, обери місце та запроси людей долучитися.",
+  "onlyYouCanSeeThisDraftInYourProfileIt": "Чернетка видима лише тобі у профілі. Вона не з’явиться на мапі чи у стрічці, а чат буде створено після публікації. Заповни основні поля, щоб зберегти її.",
+  "aboutTheEvent": "Про подію",
+  "whatWillYouDoTogetherAndWhoIsItFor": "Що ви робитимете разом і кому буде цікаво?",
+  "eventTitle": "Назва події",
+  "characters": "Від 3 до 140 символів",
+  "forExampleAParkCleanup": "Наприклад, толока у парку",
+  "atLeastCharacters": "Мінімум 3 символи",
+  "whatToKnow": "Що варто знати",
+  "characters84": "Від 10 до 5000 символів",
+  "thePlanWhatToBringAndWhoCanJoin": "План, що взяти із собою, кому підходить подія",
+  "atLeastCharacters86": "Мінімум 10 символів",
+  "whereWeLlMeet": "Де зустрічаємось",
+  "dropAPinWeLlTryToFindTheAddress": "Постав точку — адресу спробуємо визначити автоматично.",
+  "chooseAPlaceOnTheMap": "Обери місце на мапі",
+  "chooseAPlaceOnTheMap90": "Обрати місце на мапі",
+  "moveTheMapPin": "Змінити точку на мапі",
+  "atLeastCharacters92": "Мінімум 2 символи",
+  "placeNameOrLandmark": "Назва місця або орієнтир",
+  "forExampleByTheMainEntrance": "Наприклад, біля головного входу",
+  "optionalTheMapPinDefinesTheLocation": "Необов’язково: місце визначає точка на мапі",
+  "address": "Адреса",
+  "filledInAfterYouChooseAPin": "Заповниться після вибору точки",
+  "youCanEditThisOrLeaveItBlank": "Можна виправити або залишити порожньою",
+  "timeAndParticipants": "Час та учасники",
+  "helpPeoplePlanTheirVisit": "Допоможи людям спланувати участь.",
+  "start": "Початок",
+  "theEndMustBeAfterTheEventStarts": "Завершення має бути пізніше за початок події.",
+  "end": "Завершення",
+  "notSpecified": "Не вказано",
+  "withoutAnEndTimeTheChatCannotBeDeletedAutomatically": "Без часу завершення чат не можна видалити автоматично за розкладом.",
+  "theEventChatWillBeDeletedAfterTheEventEnds": "Після завершення події її чат буде видалено.",
+  "leaveTheEndTimeOpen": "Не вказувати завершення",
+  "participantLimit": "Ліміт учасників",
+  "forExample": "Наприклад, 30",
+  "leaveBlankForUnlimitedParticipation": "Залиш порожнім, якщо обмежень немає",
+  "enterAWholeNumberFromTo": "Вкажи ціле число від 1 до 10000",
+  "mapLocationSelected": "Місце на мапі обрано",
+  "volunteering": "Волонтерство",
+  "charity": "Благодійність",
+  "cleanup": "Прибирання",
+  "education": "Освіта",
+  "community": "Громада",
+  "urgent": "Терміново",
+  "other": "Інше",
+  "youVeJoinedTheEvent": "Ти долучився до події!",
+  "leaveTheEvent": "Вийти з події?",
+  "youWillBeRemovedFromTheParticipantList": "Ти більше не будеш у списку учасників.",
+  "leave": "Вийти",
+  "youVeLeftTheEvent": "Ти вийшов із події.",
+  "cancel": "Скасувати",
+  "deleteTheEvent": "Видалити подію?",
+  "theEventAndItsChatWillBeDeletedThisCannot": "Подію та її чат буде видалено. Цю дію не можна скасувати.",
+  "delete": "Видалити",
+  "yourEvent": "Твоя подія",
+  "publish": "Опублікувати",
+  "completeEvent": "Завершити подію",
+  "cancelEvent": "Скасувати подію",
+  "viewParticipants": "Переглянути учасників",
+  "deleteEvent": "Видалити подію",
+  "publishTheEvent": "Опублікувати подію?",
+  "completeTheEvent": "Завершити подію?",
+  "cancelTheEvent": "Скасувати подію?",
+  "theEventWillBecomeVisibleToOtherUsers": "Подія стане видимою іншим користувачам.",
+  "newParticipantsWillNoLongerBeAbleToJoinThe": "Нові учасники не зможуть долучитися. Чат та його історію буде видалено. Повернути попередній статус неможливо.",
+  "confirm": "Підтвердити",
+  "eventStatusUpdated": "Статус події оновлено",
+  "eventParticipants": "Учасники події",
+  "couldNotLoadParticipants": "Не вдалося завантажити учасників.",
+  "retry": "Повторити",
+  "noParticipantsYet145": "Учасників поки немає.",
+  "comingSoon": "Незабаром",
+  "happeningNow": "Триває зараз",
+  "today": "Сьогодні",
+  "cancelled": "Скасовано",
+  "completed": "Завершено",
+  "eventDetails": "Деталі події",
+  "youReTheOrganizer": "Ти організатор",
+  "youReAttending": "Ти береш участь",
+  "couldNotRefreshTheEventDetails": "Не вдалося оновити дані події.",
+  "when": "КОЛИ",
+  "noEndTimeSpecified": "Час завершення не вказано",
+  "until": "До {arg0}",
+  "@until": {
+    "placeholders": {
+      "arg0": {
+        "type": "String"
+      }
+    }
+  },
+  "where": "ДЕ",
+  "theMeetingPointIsMarkedOnTheEventMap": "Точку зустрічі позначено на мапі подій",
+  "meetingPointCopied": "Місце зустрічі скопійовано",
+  "copyLocation": "Скопіювати місце",
+  "whoSOrganizing": "Хто організовує",
+  "organizerNameUnavailable": "Ім’я організатора недоступне",
+  "eventOrganizer": "Організатор події",
+  "joiningYou": "Разом із тобою",
+  "noParticipantLimit": "Кількість місць не обмежена.",
+  "participantLimit167": "Ліміт учасників: {arg0}",
+  "@participantLimit167": {
+    "placeholders": {
+      "arg0": {
+        "type": "String"
+      }
+    }
+  },
+  "youCanJoinAfterTheEventIsPublished": "Участь відкриється після публікації.",
+  "registrationIsClosed": "Реєстрацію на подію закрито.",
+  "theParticipantListWillBeAvailableAfterYouJoin": "Список учасників буде доступний після приєднання.",
+  "pleaseWait": "Зачекай…",
+  "refreshingEventDetails": "Оновлюємо дані події",
+  "couldNotCheckEventDetailsAndParticipation": "Не вдалося перевірити дані та участь",
+  "manageEvent": "Керувати подією",
+  "youReOrganizingThisEvent": "Ти організатор цієї події",
+  "youAttended": "Ти був учасником",
+  "leaveEvent": "Вийти з події",
+  "thisEventIsNoLongerOpenToJoin": "Подія вже недоступна для участі",
+  "youReOnTheParticipantList": "Ти у списку учасників",
+  "eventCancelled": "Подію скасовано",
+  "thisEventHasnTBeenPublishedYet": "Подію ще не опубліковано",
+  "eventCompleted": "Подія завершена",
+  "participationUnavailable": "Участь недоступна",
+  "noPlacesLeft": "Усі місця зайняті",
+  "youCanCheckForPlacesLater": "Можеш перевірити наявність місць пізніше",
+  "joinEvent": "Долучитися",
+  "bePartOfAGoodCause": "Долучайся до спільної справи",
+  "placesAvailable": "Вільних місць: {arg0}",
+  "@placesAvailable": {
+    "placeholders": {
+      "arg0": {
+        "type": "String"
+      }
+    }
+  },
+  "all": "Усі",
+  "eventLocation": "Місце події",
+  "myLocation": "Моя позиція",
+  "noPinSelectedYet": "Точку ще не обрано",
+  "useThisLocation": "Використати місце",
+  "events": "Події",
+  "refresh": "Оновити",
+  "filters": "Фільтри •",
+  "filters197": "Фільтри",
+  "noEventsNearbyYet": "Поки немає подій поруч",
+  "createAnEventAndInvitePeopleToJoin": "Створи подію та запроси людей долучитися.",
+  "tryBrowsingAllCategories": "Спробуй переглянути всі категорії.",
+  "createEvent": "Створити подію",
+  "resetFilters": "Скинути фільтри",
+  "locationServicesAreOffShowingEventsWithoutADistanceLimit": "Геолокація вимкнена. Показуємо події без обмеження відстані.",
+  "allowLocationAccessToDiscoverNearbyEvents": "Дозволь геолокацію, щоб бачити події поруч.",
+  "youCanEnableLocationAccessInYourDeviceSettings": "Доступ до геолокації можна увімкнути в налаштуваннях пристрою.",
+  "couldNotDetermineYourLocationShowingAvailableEvents": "Не вдалося визначити позицію. Показуємо доступні події.",
+  "thisEventIsNoLongerOpenToJoin207": "Участь у цій події вже недоступна.",
+  "thereAreNoPlacesLeft": "Усі місця вже зайняті.",
+  "jan": "СІЧ",
+  "feb": "ЛЮТ",
+  "mar": "БЕР",
+  "apr": "КВІ",
+  "may": "ТРА",
+  "jun": "ЧЕР",
+  "jul": "ЛИП",
+  "aug": "СЕР",
+  "sep": "ВЕР",
+  "oct": "ЖОВ",
+  "nov": "ЛИС",
+  "dec": "ГРУ",
+  "participants221": "учасників",
+  "participant222": "учасник",
+  "participants223": "учасники",
+  "pastEvent": "Подія минула",
+  "openToEveryone": "Відкрита участь",
+  "placesLeft": "Залишилось місць: {arg0}",
+  "@placesLeft": {
+    "placeholders": {
+      "arg0": {
+        "type": "String"
+      }
+    }
+  },
+  "view": "Переглянути",
+  "viewEvent": "{arg0}. {arg1}. {arg2}. {arg3}. {arg4}. {arg5}. Переглянути подію.",
+  "@viewEvent": {
+    "placeholders": {
+      "arg0": {
+        "type": "String"
+      },
+      "arg1": {
+        "type": "String"
+      },
+      "arg2": {
+        "type": "String"
+      },
+      "arg3": {
+        "type": "String"
+      },
+      "arg4": {
+        "type": "String"
+      },
+      "arg5": {
+        "type": "String"
+      }
+    }
+  },
+  "m": "{arg0} м",
+  "@m": {
+    "placeholders": {
+      "arg0": {
+        "type": "String"
+      }
+    }
+  },
+  "km": "{arg0} км",
+  "@km": {
+    "placeholders": {
+      "arg0": {
+        "type": "String"
+      }
+    }
+  },
+  "theParticipantLimitMustBeGreaterThanZero": "Кількість учасників має бути більшою за нуль.",
+  "couldNotUpdateTheChatAvatar": "Не вдалося оновити аватар чату: {arg0}",
+  "@couldNotUpdateTheChatAvatar": {
+    "placeholders": {
+      "arg0": {
+        "type": "String"
+      }
+    }
+  },
+  "enterTheFullImageUrl": "Встав повне посилання на зображення",
+  "theUrlMustStartWithHttpsOrHttp": "Посилання має починатися з https:// або http://",
+  "useADirectLinkToAnImageFile": "Це має бути пряме посилання на файл картинки",
+  "chatAvatar": "Аватар чату",
+  "avatarUrl": "Посилання на аватарку",
+  "directUrlHttpsSiteComAvatarPng": "Прямий URL: https://site.com/avatar.png",
+  "saving239": "Збереження...",
+  "save": "Зберегти",
+  "removeAvatar": "Очистити аватар",
+  "addStreamApiKeyToMobileEnvAndFullyRestart": "Додай STREAM_API_KEY у mobile/.env і повністю перезапусти Flutter.",
+  "theEventHasEndedItsChatIsNoLongerAvailable": "Подія завершена. Чат більше недоступний.",
+  "streamChatIsNotConfiguredYet": "Stream Chat ще не налаштовано.",
+  "chats": "Чати",
+  "connectedAsOnlyChatsForYourEventsAppearHere": "Підключено як {arg0}. Тут показані тільки чати твоїх подій.",
+  "@connectedAsOnlyChatsForYourEventsAppearHere": {
+    "placeholders": {
+      "arg0": {
+        "type": "String"
+      }
+    }
+  },
+  "couldNotLoadChats": "Не вдалося завантажити чати",
+  "yourConversationsStartHere": "Твої розмови почнуться тут",
+  "joinAnEventToChatWithItsParticipants": "Долучися до події, щоб спілкуватися з її учасниками.",
+  "findEvents": "Знайти події",
+  "participants251": "{arg0} · {arg1} · {arg2} учасн.",
+  "@participants251": {
+    "placeholders": {
+      "arg0": {
+        "type": "String"
+      },
+      "arg1": {
+        "type": "String"
+      },
+      "arg2": {
+        "type": "String"
+      }
+    }
+  },
+  "chatAvatarUpdated": "Аватар чату оновлено",
+  "thisEventSChatIsNoLongerAvailable": "Чат цієї події більше недоступний.",
+  "removeParticipant": "Викинути учасника?",
+  "willLoseAccessToTheEventAndItsChat": "{arg0} втратить доступ до події та її чату.",
+  "@willLoseAccessToTheEventAndItsChat": {
+    "placeholders": {
+      "arg0": {
+        "type": "String"
+      }
+    }
+  },
+  "remove": "Викинути",
+  "participantRemovedFromTheEventAndChat": "Учасника видалено з події та чату",
+  "chatMembers": "Учасники чату",
+  "noParticipantsYet259": "Учасників ще немає",
+  "user260": "Користувач",
+  "profileUpdated": "Профіль оновлено",
+  "profile": "Профіль",
+  "edit": "Редагувати",
+  "myActivity": "Моя активність",
+  "reportsAndStatistics": "Звіти та статистика",
+  "myContributionParticipationAndPdfReport": "Мій внесок, участь і PDF-звіт",
+  "settings": "Налаштування",
+  "darkTheme": "Темна тема",
+  "couldNotLoadYourEvents": "Не вдалося завантажити твої події",
+  "eventsICreated": "Мої створені події",
+  "youHavenTCreatedAnyEventsYet271": "Ти ще не створював подій",
+  "eventsIJoined": "Я учасник",
+  "youHavenTJoinedAnyEventsYet273": "Ти ще не долучався до подій",
+  "holdToSignOut": "Затисни, щоб вийти",
+  "keepHoldingToSignOut": "Тримай, щоб вийти",
+  "bringPeopleTogetherAroundYourIdea": "Об’єднай людей навколо своєї ідеї.",
+  "chooseAnEventAndJoinItWillAppearHere": "Обери подію та долучися — вона з’явиться тут.",
+  "couldNotUpdateYourProfile": "Не вдалося оновити профіль: {arg0}",
+  "@couldNotUpdateYourProfile": {
+    "placeholders": {
+      "arg0": {
+        "type": "String"
+      }
+    }
+  },
+  "editProfile": "Редагувати профіль",
+  "initiativesMap": "Мапа ініціатив",
+  "createAnInitiativeAndInvitePeople": "Створи ініціативу та запроси людей.",
+  "tryAnotherCategoryOrBrowseAllEvents": "Спробуй іншу категорію або переглянь усі події.",
+  "changeFilters": "Змінити фільтри",
+  "events284": "Подій: {arg0}",
+  "@events284": {
+    "placeholders": {
+      "arg0": {
+        "type": "String"
+      }
+    }
+  },
+  "distanceUnavailable": "Відстань недоступна",
+  "mAway": "{arg0} м від тебе",
+  "@mAway": {
+    "placeholders": {
+      "arg0": {
+        "type": "String"
+      }
+    }
+  },
+  "kmAway": "{arg0} км від тебе",
+  "@kmAway": {
+    "placeholders": {
+      "arg0": {
+        "type": "String"
+      }
+    }
+  },
+  "closeCard": "Закрити картку",
+  "viewEvent289": "Переглянути подію",
+  "eventFilters": "Фільтри подій",
+  "closeFilters": "Закрити фільтри",
+  "categoriesSelectMoreThanOne": "Категорії · можна обрати декілька",
+  "allCategories": "Усі категорії",
+  "eventStartDate": "Дата початку події",
+  "anyDate": "Будь-яка дата",
+  "clearDates": "Прибрати дати",
+  "radiusKm": "Радіус: {arg0} км",
+  "@radiusKm": {
+    "placeholders": {
+      "arg0": {
+        "type": "String"
+      }
+    }
+  },
+  "fromYourSelectedCityOrCurrentLocation": "Від вибраного міста або твоєї геолокації.",
+  "aRadiusRequiresYourLocationOrASelectedCityCurrently": "Для радіуса потрібна геолокація або вибране місто. Зараз пошук без обмеження відстані.",
+  "showEvents": "Показати події",
+  "resetAllFilters": "Скинути всі фільтри",
+  "registration": "Реєстрація",
+  "createAccount": "Створити акаунт",
+  "signUpToCreateInitiativesAndJoinNearbyEvents": "Зареєструйся, щоб створювати ініціативи та долучатися до подій поруч.",
+  "forExampleAnnaPetrenko": "Наприклад, Анна Петренко",
+  "enterYourName": "Введи імʼя",
+  "enterYourEmail": "Введи пошту",
+  "password": "Пароль",
+  "atLeastCharacters309": "Мінімум 6 символів",
+  "pleaseWait310": "Зачекай...",
+  "signUp": "Зареєструватися",
+  "initiativesEventsAndPeopleNearby": "Ініціативи, події та люди поруч",
+  "retryRestoringYourSession": "Повторити відновлення входу",
+  "enterAValidEmail": "Введи коректну пошту",
+  "enterYourPassword": "Введи пароль",
+  "signIn": "Увійти",
+  "forgotPassword": "Забув пароль?",
+  "accountCreatedSignInWithYourEmailAndPassword": "Акаунт створено. Тепер увійди зі своєю поштою та паролем.",
+  "passwordResetEmailSentCheckYourInboxAndSpamFolder": "Лист для зміни пароля надіслано. Перевір пошту та папку Спам.",
+  "resetPassword": "Відновлення пароля",
+  "enterYourAccountEmailToReceiveAPasswordResetLink": "Введи пошту акаунта, і Firebase надішле лист для зміни пароля.",
+  "emailSentCheckYourSpamFolderOrResendWhenThe": "Лист надіслано. Якщо його немає, перевір папку Спам або надішли повторно після таймера.",
+  "sending": "Надсилання...",
+  "resendInS": "Повторно через {arg0} с",
+  "@resendInS": {
+    "placeholders": {
+      "arg0": {
+        "type": "String"
+      }
+    }
+  },
+  "resendEmail": "Надіслати повторно",
+  "sendEmail": "Надіслати лист",
+  "couldNotSignIn": "Не вдалося увійти.",
+  "couldNotCreateTheUser": "Не вдалося створити користувача.",
+  "passwordResetIsOnlyAvailableThroughFirebaseAuth": "Скидання пароля доступне тільки через Firebase Auth.",
+  "thisEmailIsAlreadyInUse": "Ця пошта вже використовується.",
+  "invalidEmailAddress": "Некоректна адреса пошти.",
+  "thePasswordIsTooWeak": "Пароль занадто слабкий.",
+  "noUserFoundWithThisEmail": "Користувача з такою поштою не знайдено.",
+  "incorrectEmailOrPassword": "Невірна пошта або пароль.",
+  "noConnectionToFirebase": "Немає зʼєднання з Firebase.",
+  "firebaseAuthError": "Помилка Firebase Auth.",
+  "home": "Головна",
+  "map": "Мапа",
+  "create": "Створити",
+  "lviv": "Львів",
+  "kyiv": "Київ",
+  "ivanoFrankivsk": "Івано-Франківськ",
+  "ternopil": "Тернопіль",
+  "odesa": "Одеса",
+  "dnipro": "Дніпро",
+  "kharkiv": "Харків",
+  "whereShouldWeLook": "Де шукаємо події?",
+  "showingEventsWithinTheSelectedSearchRadius": "Показуємо події в межах вибраного радіуса пошуку.",
+  "nearMe": "Поруч зі мною",
+  "usingYourDeviceSLocation": "За геолокацією пристрою",
+  "myProfile": "Мій профіль",
+  "me": "Я",
+  "yourCityYourPeople": "ТВОЄ МІСТО. ТВОЇ ЛЮДИ.",
+  "goodThingsNstartNearby": "Добрі справи\nпочинаються поруч.",
+  "discoverEventsMeetPeopleNandMakeADifferenceInYour": "Знаходь події, знайомся з людьми\nта змінюй своє місто.",
+  "findAnEventOrAGoodCause": "Знайти подію або добру справу",
+  "clearSearch": "Очистити пошук",
+  "whatMattersToYou": "Що тобі близьке?",
+  "advancedFilters": "Розширені фільтри",
+  "all360": "Усе",
+  "yourCalendarIsTemporarilyUnavailable": "Твій календар поки недоступний",
+  "anIdeaForYourCommunity": "Є ІДЕЯ ДЛЯ СПІЛЬНОТИ?",
+  "yourEventIsHappening": "ТВОЯ ПОДІЯ ТРИВАЄ",
+  "yourEventIsToday": "ТВОЯ ПОДІЯ СЬОГОДНІ",
+  "yourNextEvent": "ТВОЯ НАСТУПНА ПОДІЯ",
+  "bringPeopleTogetherNforAGoodCause": "Об’єднай людей\nнавколо доброї справи.",
+  "createEvent367": "Створити подію →",
+  "couldNotLoadEvents": "Не вдалося завантажити події",
+  "letSFindYourCity": "Знайдемо твоє місто?",
+  "withoutLocationAccessWeShowEventsFromDifferentCities": "Без геолокації показуємо доступні події з різних міст.",
+  "chooseACity": "Обрати місто",
+  "noEventsMatchYourSearch": "За цим запитом подій немає",
+  "itSQuietHereWantToStartSomething": "Тут поки тихо. Почнемо з тебе?",
+  "tryDifferentWordsOrAnotherCategory": "Спробуй інші слова або вибери іншу категорію.",
+  "createTheFirstInitiativeOrTryAnotherCity": "Створи першу ініціативу або пошукай в іншому місті.",
+  "thisWeekend": "Цими вихідними",
+  "searchResults": "Результати пошуку",
+  "nearbyEvents": "Події поруч",
+  "discoverSomethingNew": "Відкривай нове",
+  "openMap": "Відкрити мапу",
+  "loadingEvents": "Завантаження подій",
+  "loading": "Завантаження",
+  "theServerDidNotRespondInTimeTryAgain": "Сервер не відповів вчасно. Спробуй ще раз.",
+  "noConnectionToTheServerCheckYourInternetAndTry": "Немає з’єднання із сервером. Перевір інтернет і спробуй ще раз.",
+  "yourSessionHasExpiredSignInAgain": "Сесія завершилася. Увійди ще раз.",
+  "youDonTHavePermissionToDoThis": "Недостатньо прав для цієї дії.",
+  "theServiceIsTemporarilyUnavailableTryAgainLater": "Сервіс тимчасово недоступний. Спробуй пізніше.",
+  "couldNotCompleteTheRequest": "Не вдалося виконати запит.",
+  "theServerReturnedInvalidData": "Сервер повернув некоректні дані.",
+  "language": "Мова",
+  "systemLanguage": "Мова пристрою",
+  "draftServerUnavailable": "Сервер ще не підтримує безпечне збереження чернеток. Подію не опубліковано. Спробуй після оновлення сервера.",
+  "bio": "Про себе",
+  "eventNotFound": "Подію не знайдено.",
+  "chatNotFound": "Чат не знайдено.",
+  "userNotFound": "Користувача не знайдено.",
+  "profileNotSynced": "Не вдалося синхронізувати профіль. Спробуй увійти ще раз.",
+  "validationFailed": "Перевір заповнені поля.",
+  "statusChangeUnavailable": "Ця зміна статусу вже недоступна. Онови подію.",
+  "completeStartedOnly": "Завершити можна лише подію, яка вже почалася.",
+  "startMustBeFuture": "Новий час початку має бути в майбутньому.",
+  "endHasPassed": "Час завершення вже минув.",
+  "publishFutureStart": "Перед публікацією обери майбутній час початку.",
+  "startedTimeLocked": "Не можна переносити початок події, яка вже почалася.",
+  "capacityBelowAttendance": "Ліміт не може бути меншим за кількість учасників.",
+  "endedParticipationLocked": "Участь у завершеній події не змінюється.",
+  "organizerCannotLeave": "Організатор не може вийти зі своєї події.",
+  "organizerCannotBeRemoved": "Організатора не можна видалити з події.",
+  "leaveInsteadOfRemove": "Скористайся кнопкою виходу з події.",
+  "notEventMember": "Користувач не є учасником цієї події.",
+  "chatUnavailable": "Чат зараз недоступний. Спробуй пізніше."
+}

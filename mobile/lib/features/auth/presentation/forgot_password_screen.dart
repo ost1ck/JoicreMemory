@@ -1,15 +1,16 @@
+import 'package:joicrememory/l10n/localization.dart';
 import 'dart:async';
 
 import 'package:flutter/material.dart';
 
 import '../../../core/network/api_error_message.dart';
-import '../../../core/session/app_session.dart';
+import '../../auth/presentation/controllers/auth_controller.dart';
 import '../../../core/ui/app_snack_bar.dart';
 
 class ForgotPasswordScreen extends StatefulWidget {
   const ForgotPasswordScreen({super.key, required this.session});
 
-  final AppSession session;
+  final AuthController session;
 
   @override
   State<ForgotPasswordScreen> createState() => _ForgotPasswordScreenState();
@@ -53,20 +54,23 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
 
       showSuccessSnackBar(
         context,
-        'Лист для зміни пароля надіслано. Перевір пошту та папку Спам.',
+        context.l10n.passwordResetEmailSentCheckYourInboxAndSpamFolder,
       );
     } catch (error) {
       if (!mounted) {
         return;
       }
 
-      showErrorSnackBar(context, apiErrorMessage(error));
+      showErrorSnackBar(
+        context,
+        context.localizeMessage(apiErrorMessage(error)),
+      );
     }
   }
 
   void _startResendTimer() {
     _timer?.cancel();
-    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
       if (!mounted) {
         timer.cancel();
         return;
@@ -87,13 +91,13 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     final colorScheme = Theme.of(context).colorScheme;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Відновлення пароля')),
+      appBar: AppBar(title: Text(context.l10n.resetPassword)),
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.all(24),
+            padding: EdgeInsets.all(24),
             child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 420),
+              constraints: BoxConstraints(maxWidth: 420),
               child: Form(
                 key: _formKey,
                 child: Column(
@@ -105,9 +109,9 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                       size: 58,
                       color: colorScheme.primary,
                     ),
-                    const SizedBox(height: 18),
+                    SizedBox(height: 18),
                     Text(
-                      'Забув пароль?',
+                      context.l10n.forgotPassword,
                       textAlign: TextAlign.center,
                       style: Theme.of(
                         context,
@@ -116,18 +120,20 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                         color: colorScheme.onSurface,
                       ),
                     ),
-                    const SizedBox(height: 8),
+                    SizedBox(height: 8),
                     Text(
-                      'Введи пошту акаунта, і Firebase надішле лист для зміни пароля.',
+                      context
+                          .l10n
+                          .enterYourAccountEmailToReceiveAPasswordResetLink,
                       textAlign: TextAlign.center,
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                         color: colorScheme.onSurfaceVariant,
                       ),
                     ),
                     if (_emailSent) ...[
-                      const SizedBox(height: 18),
+                      SizedBox(height: 18),
                       Container(
-                        padding: const EdgeInsets.all(14),
+                        padding: EdgeInsets.all(14),
                         decoration: BoxDecoration(
                           color: colorScheme.primaryContainer,
                           borderRadius: BorderRadius.circular(8),
@@ -138,10 +144,12 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                               Icons.mark_email_read_outlined,
                               color: colorScheme.onPrimaryContainer,
                             ),
-                            const SizedBox(width: 10),
+                            SizedBox(width: 10),
                             Expanded(
                               child: Text(
-                                'Лист надіслано. Якщо його немає, перевір папку Спам або надішли повторно після таймера.',
+                                context
+                                    .l10n
+                                    .emailSentCheckYourSpamFolderOrResendWhenThe,
                                 style: Theme.of(
                                   context,
                                 ).textTheme.bodySmall?.copyWith(
@@ -154,37 +162,39 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                         ),
                       ),
                     ],
-                    const SizedBox(height: 24),
+                    SizedBox(height: 24),
                     TextFormField(
                       controller: _emailController,
                       keyboardType: TextInputType.emailAddress,
-                      decoration: const InputDecoration(
-                        labelText: 'Пошта',
+                      decoration: InputDecoration(
+                        labelText: context.l10n.email53,
                         hintText: 'name@example.com',
                         prefixIcon: Icon(Icons.mail_outline),
                       ),
                       validator: (value) {
                         if (value == null || !value.contains('@')) {
-                          return 'Введи коректну пошту';
+                          return context.l10n.enterAValidEmail;
                         }
                         return null;
                       },
                     ),
-                    const SizedBox(height: 18),
+                    SizedBox(height: 18),
                     ElevatedButton.icon(
                       onPressed:
                           widget.session.isBusy || _secondsToResend > 0
                               ? null
                               : _submit,
-                      icon: const Icon(Icons.send_outlined),
+                      icon: Icon(Icons.send_outlined),
                       label: Text(
                         widget.session.isBusy
-                            ? 'Надсилання...'
+                            ? context.l10n.sending
                             : _secondsToResend > 0
-                            ? 'Повторно через $_secondsToResend с'
+                            ? context.l10n.resendInS(
+                              (_secondsToResend).toString(),
+                            )
                             : _emailSent
-                            ? 'Надіслати повторно'
-                            : 'Надіслати лист',
+                            ? context.l10n.resendEmail
+                            : context.l10n.sendEmail,
                       ),
                     ),
                   ],

@@ -1,9 +1,11 @@
+import 'package:joicrememory/l10n/localization.dart';
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart' as stream;
 
-import '../../../core/session/app_session.dart';
+import '../../auth/presentation/controllers/auth_controller.dart';
 import '../../../core/ui/app_snack_bar.dart';
-import '../data/event_chat.dart';
+import '../domain/entities/event_chat.dart';
 import 'edit_event_chat_avatar_screen.dart';
 import 'event_chat_members_screen.dart';
 
@@ -17,7 +19,7 @@ class EventChatRoomScreen extends StatefulWidget {
     required this.onChanged,
   });
 
-  final AppSession session;
+  final AuthController session;
   final stream.StreamChatClient client;
   final stream.Channel channel;
   final EventChat chat;
@@ -28,6 +30,41 @@ class EventChatRoomScreen extends StatefulWidget {
 }
 
 class _EventChatRoomScreenState extends State<EventChatRoomScreen> {
+  Timer? _expiryTimer;
+  StreamSubscription<stream.Event>? _deletedSubscription;
+  bool _deleted = false;
+  @override
+  void initState() {
+    super.initState();
+    _deletedSubscription = widget.channel
+        .on()
+        .where(
+          (event) =>
+              event.type == 'channel.deleted' ||
+              event.type == 'notification.channel_deleted',
+        )
+        .listen((_) {
+          if (mounted) setState(() => _deleted = true);
+        });
+    final end = widget.chat.endsAt;
+    if (end != null) {
+      final remaining = end.difference(DateTime.now());
+      _expiryTimer = Timer(
+        remaining.isNegative ? Duration.zero : remaining,
+        () {
+          if (mounted) setState(() {});
+        },
+      );
+    }
+  }
+
+  @override
+  void dispose() {
+    _deletedSubscription?.cancel();
+    _expiryTimer?.cancel();
+    super.dispose();
+  }
+
   Future<void> _changeAvatar() async {
     final updated = await Navigator.of(context).push<bool>(
       MaterialPageRoute(
@@ -46,7 +83,7 @@ class _EventChatRoomScreenState extends State<EventChatRoomScreen> {
     await widget.onChanged();
 
     if (mounted) {
-      showSuccessSnackBar(context, 'Аватар чату оновлено');
+      showSuccessSnackBar(context, context.l10n.chatAvatarUpdated);
     }
   }
 
@@ -65,6 +102,20 @@ class _EventChatRoomScreenState extends State<EventChatRoomScreen> {
 
   @override
   Widget build(BuildContext context) {
+    if (_deleted || !widget.chat.isActiveAt(DateTime.now())) {
+      return Scaffold(
+        appBar: AppBar(title: Text(context.l10n.eventCompleted)),
+        body: Center(
+          child: Padding(
+            padding: EdgeInsets.all(24),
+            child: Text(
+              context.l10n.thisEventSChatIsNoLongerAvailable,
+              textAlign: TextAlign.center,
+            ),
+          ),
+        ),
+      );
+    }
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -84,19 +135,19 @@ class _EventChatRoomScreenState extends State<EventChatRoomScreen> {
                 }
               },
               itemBuilder:
-                  (context) => const [
+                  (context) => [
                     PopupMenuItem(
                       value: _ChatAction.members,
                       child: ListTile(
                         leading: Icon(Icons.group_outlined),
-                        title: Text('Учасники'),
+                        title: Text(context.l10n.participants45),
                       ),
                     ),
                     PopupMenuItem(
                       value: _ChatAction.avatar,
                       child: ListTile(
                         leading: Icon(Icons.image_outlined),
-                        title: Text('Аватар чату'),
+                        title: Text(context.l10n.chatAvatar),
                       ),
                     ),
                   ],
@@ -105,9 +156,10 @@ class _EventChatRoomScreenState extends State<EventChatRoomScreen> {
       ),
       body: stream.StreamChat(
         client: widget.client,
+        streamChatThemeData: _chatTheme(context),
         child: stream.StreamChannel(
           channel: widget.channel,
-          child: const SafeArea(
+          child: SafeArea(
             child: Column(
               children: [
                 Expanded(
@@ -124,6 +176,27 @@ class _EventChatRoomScreenState extends State<EventChatRoomScreen> {
           ),
         ),
       ),
+    );
+  }
+
+  stream.StreamChatThemeData _chatTheme(BuildContext context) {
+    final theme = Theme.of(context);
+    final scheme = theme.colorScheme;
+    final base = stream.StreamChatThemeData(brightness: theme.brightness);
+    return stream.StreamChatThemeData.fromColorAndTextTheme(
+      base.colorTheme.copyWith(
+        brightness: theme.brightness,
+        accentPrimary: scheme.primary,
+        accentError: scheme.error,
+        textHighEmphasis: scheme.onSurface,
+        textLowEmphasis: scheme.onSurfaceVariant,
+        appBg: theme.scaffoldBackgroundColor,
+        barsBg: scheme.surface,
+        inputBg: scheme.surface,
+        borders: scheme.outlineVariant,
+        linkBg: scheme.primaryContainer,
+      ),
+      base.textTheme,
     );
   }
 }

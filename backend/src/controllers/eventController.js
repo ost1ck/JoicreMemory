@@ -21,7 +21,7 @@ async function createEvent(req, res) {
 }
 
 async function getEvent(req, res) {
-  const event = await eventService.getEvent(req.params.id);
+  const event = await eventService.getVisibleEvent(req.params.id, req.auth);
   res.status(200).json({ data: event });
 }
 

@@ -1,18 +1,27 @@
+import 'package:joicrememory/l10n/localization.dart';
+import '../../../core/ui/loading_skeleton.dart';
+import '../../../core/ui/empty_state.dart';
+import '../../../core/ui/soft_motion.dart';
+import '../../events/presentation/create_event_screen.dart';
+import '../../events/domain/usecases/load_nearby_events.dart';
+import '../../events/presentation/controllers/nearby_events_controller.dart';
+import '../../../app/app_scope.dart';
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
-import '../../../core/session/app_session.dart';
-import '../../events/data/event.dart';
-import '../../events/presentation/event_category_filter_bar.dart';
+import '../../auth/presentation/controllers/auth_controller.dart';
+import '../../events/domain/entities/event.dart';
+import '../../events/domain/entities/event_filters.dart';
+import 'widgets/map_event_card.dart';
+import 'widgets/map_filters_sheet.dart';
 import '../../events/presentation/event_details_screen.dart';
 
 class EventMapScreen extends StatefulWidget {
   const EventMapScreen({super.key, required this.session});
 
-  final AppSession session;
+  final AuthController session;
 
   @override
   State<EventMapScreen> createState() => _EventMapScreenState();
@@ -25,67 +34,70 @@ class _EventMapScreenState extends State<EventMapScreen> {
   LatLng _mapCenter = _ukraineCenter;
   LatLng? _userLocation;
   List<Event> _events = [];
+  Event? _selectedEvent;
   bool _isLoading = true;
   bool _canShowUserLocation = false;
   bool _showMapNotices = true;
   String? _errorMessage;
   String? _locationNotice;
-  String? _selectedCategory;
+  EventFilters _filters = EventFilters();
   Timer? _noticeTimer;
+  late final NearbyEventsController _controller;
 
   @override
   void initState() {
     super.initState();
+    final scope = AppScope.read(context);
+    _controller = NearbyEventsController(
+      LoadNearbyEvents(scope.events, scope.location),
+    );
+    _controller.addListener(_onEventsChanged);
     _loadEvents();
   }
 
   @override
   void dispose() {
     _noticeTimer?.cancel();
+    _controller.dispose();
+    _mapController?.dispose();
     super.dispose();
   }
 
-  Future<void> _loadEvents() async {
-    setState(() => _isLoading = true);
+  Future<void> _loadEvents() => _controller.applyFilters(_filters);
 
-    try {
-      final locationResult = await _resolveCurrentLocation();
-      final searchCenter = locationResult.location;
-      final events =
-          searchCenter == null
-              ? <Event>[]
-              : await widget.session.eventApi.listEvents(
-                latitude: searchCenter.latitude,
-                longitude: searchCenter.longitude,
-                radiusMeters: 20000,
-                category: _selectedCategory,
-              );
-
-      if (mounted) {
-        setState(() {
-          _mapCenter = searchCenter ?? _ukraineCenter;
-          _userLocation = locationResult.location;
-          _canShowUserLocation = locationResult.location != null;
-          _events = events;
-          _errorMessage = null;
-          _locationNotice = locationResult.notice;
-          _showMapNotices = true;
-        });
-        _scheduleNoticeDismiss();
-        _focusMap();
+  void _onEventsChanged() {
+    if (!mounted) return;
+    final location = _controller.location.location;
+    setState(() {
+      _isLoading = _controller.isLoading;
+      _events =
+          _controller.events
+              .where(
+                (event) =>
+                    _filters.categories.isEmpty ||
+                    _filters.categories.contains(event.category),
+              )
+              .toList();
+      if (!_controller.isLoading && _controller.errorMessage == null) {
+        final selectedId = _selectedEvent?.id;
+        _selectedEvent = null;
+        for (final event in _events) {
+          if (event.id == selectedId) _selectedEvent = event;
+        }
       }
-    } catch (_) {
-      if (mounted) {
-        setState(() {
-          _errorMessage = 'Не вдалося завантажити події на мапі.';
-          _showMapNotices = true;
-        });
-        _scheduleNoticeDismiss();
-      }
-    } finally {
-      if (mounted) {
-        setState(() => _isLoading = false);
-      }
+      _errorMessage = _controller.errorMessage;
+      _locationNotice = _controller.locationNotice;
+      _userLocation =
+          location == null
+              ? null
+              : LatLng(location.latitude, location.longitude);
+      _mapCenter = _userLocation ?? _ukraineCenter;
+      _canShowUserLocation = location != null;
+      _showMapNotices = true;
+    });
+    if (!_isLoading) {
+      _scheduleNoticeDismiss();
+      if (_selectedEvent == null) _focusMap();
     }
   }
 
@@ -97,154 +109,235 @@ class _EventMapScreenState extends State<EventMapScreen> {
               (event) => Marker(
                 markerId: MarkerId(event.id),
                 position: LatLng(event.latitude, event.longitude),
-                infoWindow: InfoWindow(
-                  title: event.title,
-                  snippet: event.locationName,
-                  onTap: () => _openDetails(event),
+                consumeTapEvents: true,
+                icon: BitmapDescriptor.defaultMarkerWithHue(
+                  _selectedEvent?.id == event.id
+                      ? BitmapDescriptor.hueOrange
+                      : BitmapDescriptor.hueRed,
                 ),
+                onTap: () => _selectEvent(event),
               ),
             )
             .toSet();
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Мапа ініціатив'),
+        title: Text(context.l10n.initiativesMap),
         actions: [
           IconButton(
             onPressed: _loadEvents,
-            icon: const Icon(Icons.refresh),
-            tooltip: 'Оновити',
+            icon: Icon(Icons.refresh),
+            tooltip: context.l10n.refresh,
           ),
         ],
       ),
-      body: Stack(
-        children: [
-          GoogleMap(
-            initialCameraPosition: CameraPosition(target: _mapCenter, zoom: 12),
-            onMapCreated: (controller) {
-              _mapController = controller;
-              _focusMap();
-            },
-            markers: markers,
-            myLocationEnabled: _canShowUserLocation,
-            myLocationButtonEnabled: _canShowUserLocation,
-            zoomControlsEnabled: false,
-          ),
-          if (_showMapNotices && _errorMessage != null)
-            Positioned(
-              left: 16,
-              right: 16,
-              top: 72,
-              child: _MapNotice(
-                icon: Icons.cloud_off_outlined,
-                text: _errorMessage!,
+      body: LayoutBuilder(
+        builder: (context, constraints) {
+          final cardHeight = (250 * MediaQuery.textScalerOf(context).scale(1))
+              .clamp(0.0, constraints.maxHeight * .55);
+          final bottomInset = MediaQuery.paddingOf(context).bottom;
+          return Stack(
+            children: [
+              GoogleMap(
+                initialCameraPosition: CameraPosition(
+                  target: _mapCenter,
+                  zoom: 12,
+                ),
+                onMapCreated: (controller) {
+                  _mapController = controller;
+                  _focusMap();
+                },
+                markers: markers,
+                padding: EdgeInsets.only(
+                  top: 64,
+                  bottom:
+                      _selectedEvent == null
+                          ? bottomInset
+                          : cardHeight + bottomInset + 24,
+                ),
+                onTap: (_) => setState(() => _selectedEvent = null),
+                mapToolbarEnabled: false,
+                myLocationEnabled: _canShowUserLocation,
+                myLocationButtonEnabled: _canShowUserLocation,
+                zoomControlsEnabled: false,
               ),
-            ),
-          if (_showMapNotices &&
-              !_isLoading &&
-              _locationNotice != null &&
-              _errorMessage == null)
-            Positioned(
-              left: 16,
-              right: 16,
-              top: 72,
-              child: _MapNotice(
-                icon: Icons.my_location_outlined,
-                text: _locationNotice!,
+              if (_showMapNotices && _errorMessage != null)
+                Positioned(
+                  left: 16,
+                  right: 16,
+                  top: 72,
+                  child: _MapNotice(
+                    icon: Icons.cloud_off_outlined,
+                    text: context.localizeMessage(_errorMessage!),
+                  ),
+                ),
+              if (_showMapNotices &&
+                  !_isLoading &&
+                  _locationNotice != null &&
+                  _errorMessage == null)
+                Positioned(
+                  left: 16,
+                  right: 16,
+                  top: 72,
+                  child: _MapNotice(
+                    icon: Icons.my_location_outlined,
+                    text: context.localizeMessage(_locationNotice!),
+                  ),
+                ),
+              if (!_isLoading && _events.isEmpty && _errorMessage == null)
+                Positioned(
+                  left: 16,
+                  right: 16,
+                  bottom: bottomInset + 12,
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(
+                      maxHeight: constraints.maxHeight * .5,
+                    ),
+                    child: Material(
+                      color: Theme.of(context).colorScheme.surface,
+                      borderRadius: BorderRadius.circular(24),
+                      child: SingleChildScrollView(
+                        padding: EdgeInsets.symmetric(horizontal: 20),
+                        child: EmptyState(
+                          title: context.l10n.noEventsNearbyYet,
+                          message:
+                              !_filters.isActive
+                                  ? context
+                                      .l10n
+                                      .createAnInitiativeAndInvitePeople
+                                  : context
+                                      .l10n
+                                      .tryAnotherCategoryOrBrowseAllEvents,
+                          actionLabel:
+                              !_filters.isActive
+                                  ? context.l10n.createEvent
+                                  : context.l10n.changeFilters,
+                          onAction:
+                              !_filters.isActive ? _createEvent : _openFilters,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              if (_isLoading && _selectedEvent == null)
+                Positioned(
+                  left: 16,
+                  right: 16,
+                  bottom: bottomInset + 12,
+                  child: Material(
+                    color: Theme.of(context).colorScheme.surface,
+                    borderRadius: BorderRadius.circular(24),
+                    child: Padding(
+                      padding: EdgeInsets.all(16),
+                      child: LoadingSkeleton(cards: false, count: 1),
+                    ),
+                  ),
+                ),
+              Positioned(
+                left: 16,
+                right: 16,
+                top: 12,
+                child: Row(
+                  children: [
+                    Flexible(
+                      child: FilledButton.tonalIcon(
+                        onPressed: _openFilters,
+                        icon: Icon(Icons.tune),
+                        label: Text(
+                          !_filters.isActive
+                              ? context.l10n.filters197
+                              : context.l10n.filters,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ),
+                    SizedBox(width: 12),
+                    if (!_isLoading && _errorMessage == null)
+                      Chip(
+                        label: Text(
+                          context.l10n.events284((_events.length).toString()),
+                        ),
+                      ),
+                  ],
+                ),
               ),
-            ),
-          if (_showMapNotices &&
-              !_isLoading &&
-              _events.isEmpty &&
-              _errorMessage == null)
-            Positioned(
-              left: 16,
-              right: 16,
-              top: _locationNotice == null ? 72 : 144,
-              child: const _MapNotice(
-                icon: Icons.place_outlined,
-                text: 'Поки немає подій поруч.',
-              ),
-            ),
-          if (_isLoading)
-            const Positioned.fill(
-              child: Center(child: CircularProgressIndicator()),
-            ),
-          Positioned(
-            left: 0,
-            right: 0,
-            top: 12,
-            child: EventCategoryFilterBar(
-              selectedCategory: _selectedCategory,
-              onChanged: (category) {
-                setState(() {
-                  _selectedCategory = category;
-                });
-                _loadEvents();
-              },
-            ),
-          ),
-        ],
+              if (_selectedEvent != null)
+                Positioned(
+                  left: 16,
+                  right: 16,
+                  bottom: bottomInset + 12,
+                  height: cardHeight,
+                  child: SoftEntrance(
+                    key: ValueKey(_selectedEvent!.id),
+                    child: MapEventCard(
+                      event: _selectedEvent!,
+                      onOpen: () => _openDetails(_selectedEvent!),
+                      onClose: () => setState(() => _selectedEvent = null),
+                    ),
+                  ),
+                ),
+            ],
+          );
+        },
       ),
     );
   }
 
+  Future<void> _createEvent() async {
+    await Navigator.of(context).push(
+      MaterialPageRoute(
+        builder:
+            (routeContext) => CreateEventScreen(
+              session: widget.session,
+              onCreated: () => Navigator.pop(routeContext),
+            ),
+      ),
+    );
+    if (mounted) _loadEvents();
+  }
+
+  void _selectEvent(Event event) {
+    setState(() => _selectedEvent = event);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      _mapController?.animateCamera(
+        CameraUpdate.newLatLng(LatLng(event.latitude, event.longitude)),
+      );
+    });
+  }
+
+  Future<void> _openFilters() async {
+    final selection = await showModalBottomSheet<MapFilterSelection>(
+      context: context,
+      isScrollControlled: true,
+      showDragHandle: true,
+      builder:
+          (_) => MapFiltersSheet(
+            filters: _filters,
+            hasLocation: _userLocation != null,
+          ),
+    );
+    if (!mounted || selection?.filters == null) {
+      return;
+    }
+    setState(() {
+      _filters = selection!.filters!;
+      _selectedEvent = null;
+      _events = [];
+    });
+    await _loadEvents();
+  }
+
   void _scheduleNoticeDismiss() {
     _noticeTimer?.cancel();
-    _noticeTimer = Timer(const Duration(seconds: 15), () {
+    _noticeTimer = Timer(Duration(seconds: 15), () {
       if (!mounted) {
         return;
       }
 
       setState(() => _showMapNotices = false);
     });
-  }
-
-  Future<_LocationResult> _resolveCurrentLocation() async {
-    try {
-      final serviceEnabled = await Geolocator.isLocationServiceEnabled();
-
-      if (!serviceEnabled) {
-        return const _LocationResult(
-          notice:
-              'Геолокація вимкнена. Увімкни Location у симуляторі або на пристрої.',
-        );
-      }
-
-      var permission = await Geolocator.checkPermission();
-
-      if (permission == LocationPermission.denied) {
-        permission = await Geolocator.requestPermission();
-      }
-
-      if (permission == LocationPermission.denied) {
-        return const _LocationResult(
-          notice: 'Дозволь геолокацію, щоб бачити події поруч із собою.',
-        );
-      }
-
-      if (permission == LocationPermission.deniedForever) {
-        return const _LocationResult(
-          notice: 'Доступ до геолокації заборонений у налаштуваннях пристрою.',
-        );
-      }
-
-      final position = await Geolocator.getCurrentPosition(
-        locationSettings: const LocationSettings(
-          accuracy: LocationAccuracy.high,
-          timeLimit: Duration(seconds: 8),
-        ),
-      );
-
-      return _LocationResult(
-        location: LatLng(position.latitude, position.longitude),
-      );
-    } catch (_) {
-      return const _LocationResult(
-        notice:
-            'Не вдалося визначити позицію. У Simulator обери Features > Location.',
-      );
-    }
   }
 
   void _focusMap() {
@@ -332,18 +425,11 @@ class _EventMapScreenState extends State<EventMapScreen> {
           ),
         )
         .then((changed) {
-          if (changed == true && mounted) {
+          if (mounted) {
             _loadEvents();
           }
         });
   }
-}
-
-class _LocationResult {
-  const _LocationResult({this.location, this.notice});
-
-  final LatLng? location;
-  final String? notice;
 }
 
 class _MapNotice extends StatelessWidget {
@@ -360,11 +446,11 @@ class _MapNotice extends StatelessWidget {
       color: colorScheme.surface,
       elevation: 3,
       child: Padding(
-        padding: const EdgeInsets.all(12),
+        padding: EdgeInsets.all(12),
         child: Row(
           children: [
             Icon(icon, color: colorScheme.primary),
-            const SizedBox(width: 10),
+            SizedBox(width: 10),
             Expanded(
               child: Text(
                 text,

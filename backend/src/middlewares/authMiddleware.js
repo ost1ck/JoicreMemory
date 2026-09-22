@@ -58,6 +58,11 @@ async function authenticate(req, res, next) {
   }
 }
 
+function optionalAuthenticate(req, res, next) {
+  if (req.headers.authorization || req.headers['x-dev-firebase-uid']) return authenticate(req, res, next);
+  return next();
+}
 module.exports = {
+  optionalAuthenticate,
   authenticate
 };

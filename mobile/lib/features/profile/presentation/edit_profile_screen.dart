@@ -1,12 +1,13 @@
+import 'package:joicrememory/l10n/localization.dart';
 import 'package:flutter/material.dart';
 
 import '../../../core/network/api_error_message.dart';
-import '../../../core/session/app_session.dart';
+import '../../auth/presentation/controllers/auth_controller.dart';
 
 class EditProfileScreen extends StatefulWidget {
   const EditProfileScreen({super.key, required this.session});
 
-  final AppSession session;
+  final AuthController session;
 
   @override
   State<EditProfileScreen> createState() => _EditProfileScreenState();
@@ -65,7 +66,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            'Не вдалося оновити профіль: ${apiErrorMessage(error)}',
+            context.l10n.couldNotUpdateYourProfile(
+              (context.localizeMessage(apiErrorMessage(error))).toString(),
+            ),
           ),
         ),
       );
@@ -84,11 +87,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
     final uri = Uri.tryParse(avatarUrl);
     if (uri == null || !uri.hasScheme || uri.host.isEmpty) {
-      return 'Встав повне посилання на зображення';
+      return context.l10n.enterTheFullImageUrl;
     }
 
     if (uri.scheme != 'https' && uri.scheme != 'http') {
-      return 'Посилання має починатися з https:// або http://';
+      return context.l10n.theUrlMustStartWithHttpsOrHttp;
     }
 
     final path = uri.path.toLowerCase();
@@ -98,7 +101,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         uri.host == 'picsum.photos';
 
     if (!looksLikeImage) {
-      return 'Це має бути пряме посилання на файл картинки';
+      return context.l10n.useADirectLinkToAnImageFile;
     }
 
     return null;
@@ -107,18 +110,18 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Редагувати профіль')),
+      appBar: AppBar(title: Text(context.l10n.editProfile)),
       body: SafeArea(
         child: Form(
           key: _formKey,
           child: ListView(
             keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-            padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
+            padding: EdgeInsets.fromLTRB(16, 8, 16, 24),
             children: [
               TextFormField(
                 controller: _fullNameController,
-                decoration: const InputDecoration(
-                  labelText: 'Імʼя',
+                decoration: InputDecoration(
+                  labelText: context.l10n.name,
                   prefixIcon: Icon(Icons.person_outline),
                 ),
                 onTapOutside:
@@ -126,26 +129,26 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 validator:
                     (value) =>
                         value == null || value.trim().length < 2
-                            ? 'Мінімум 2 символи'
+                            ? context.l10n.atLeastCharacters92
                             : null,
               ),
-              const SizedBox(height: 12),
+              SizedBox(height: 12),
               TextFormField(
                 controller: _bioController,
                 maxLines: 4,
-                decoration: const InputDecoration(
-                  labelText: 'Bio',
+                decoration: InputDecoration(
+                  labelText: context.l10n.bio,
                   prefixIcon: Icon(Icons.notes_outlined),
                 ),
                 onTapOutside:
                     (_) => FocusManager.instance.primaryFocus?.unfocus(),
               ),
-              const SizedBox(height: 12),
+              SizedBox(height: 12),
               TextFormField(
                 controller: _avatarController,
-                decoration: const InputDecoration(
-                  labelText: 'Посилання на аватарку',
-                  helperText: 'Прямий URL: https://site.com/avatar.png',
+                decoration: InputDecoration(
+                  labelText: context.l10n.avatarUrl,
+                  helperText: context.l10n.directUrlHttpsSiteComAvatarPng,
                   prefixIcon: Icon(Icons.image_outlined),
                 ),
                 keyboardType: TextInputType.url,
@@ -153,11 +156,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     (_) => FocusManager.instance.primaryFocus?.unfocus(),
                 validator: _validateAvatarUrl,
               ),
-              const SizedBox(height: 18),
+              SizedBox(height: 18),
               ElevatedButton.icon(
                 onPressed: _isSaving ? null : _save,
-                icon: const Icon(Icons.save_outlined),
-                label: Text(_isSaving ? 'Збереження...' : 'Зберегти'),
+                icon: Icon(Icons.save_outlined),
+                label: Text(
+                  _isSaving ? context.l10n.saving239 : context.l10n.save,
+                ),
               ),
             ],
           ),

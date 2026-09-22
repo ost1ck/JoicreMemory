@@ -71,9 +71,10 @@ async function create(data) {
         starts_at,
         ends_at,
         max_participants,
-        image_url
+        image_url,
+        status
       )
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
       RETURNING *
     `,
     [
@@ -88,7 +89,8 @@ async function create(data) {
       data.startsAt,
       data.endsAt,
       data.maxParticipants,
-      data.imageUrl
+      data.imageUrl,
+      data.status || 'published'
     ]
   );
 
@@ -110,7 +112,8 @@ async function findById(id) {
 
 async function list(filters) {
   const values = [];
-  const conditions = [];
+  const conditions = ["e.status <> 'draft'"];
+  if (!filters.status || filters.status === 'published') conditions.push('(e.ends_at IS NULL OR e.ends_at > NOW())');
 
   let distanceSql = 'NULL';
 
@@ -139,9 +142,21 @@ async function list(filters) {
   values.push(filters.status || 'published');
   conditions.push(`e.status = $${values.length}`);
 
-  if (filters.category) {
+  if (filters.categories?.length) {
+    values.push(filters.categories);
+    conditions.push(`e.category = ANY($${values.length}::text[])`);
+  } else if (filters.category) {
     values.push(filters.category);
     conditions.push(`e.category = $${values.length}`);
+  }
+
+  if (filters.startsFrom) {
+    values.push(filters.startsFrom);
+    conditions.push(`e.starts_at >= $${values.length}::timestamptz`);
+  }
+  if (filters.startsBefore) {
+    values.push(filters.startsBefore);
+    conditions.push(`e.starts_at < $${values.length}::timestamptz`);
   }
 
   if (filters.search) {

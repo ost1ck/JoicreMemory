@@ -1,13 +1,20 @@
+import 'package:joicrememory/l10n/localization.dart';
+import '../domain/usecases/load_active_chats.dart';
+import 'dart:async';
+import '../../../core/ui/loading_skeleton.dart';
+import '../../../core/ui/empty_state.dart';
+import '../../events/presentation/event_list_screen.dart';
+import '../../../app/app_scope.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart' as stream;
 
 import '../../../core/constants/app_config.dart';
 import '../../../core/network/api_error_message.dart';
-import '../../../core/session/app_session.dart';
+import '../../auth/presentation/controllers/auth_controller.dart';
 import '../../../core/ui/app_snack_bar.dart';
-import '../data/event_chat.dart';
-import '../data/stream_token_data.dart';
+import '../domain/entities/event_chat.dart';
+import '../domain/entities/stream_token_data.dart';
 import 'event_chat_room_screen.dart';
 
 class ChatsScreen extends StatefulWidget {
@@ -17,24 +24,28 @@ class ChatsScreen extends StatefulWidget {
     required this.refreshSignal,
   });
 
-  final AppSession session;
+  final AuthController session;
   final int refreshSignal;
 
   @override
   State<ChatsScreen> createState() => _ChatsScreenState();
 }
 
-class _ChatsScreenState extends State<ChatsScreen> {
+class _ChatsScreenState extends State<ChatsScreen> with WidgetsBindingObserver {
   StreamTokenData? _tokenData;
   stream.StreamChatClient? _client;
   late Future<List<EventChat>> _chatsFuture;
   bool _isConnecting = true;
   String? _message;
+  Timer? _expiryTimer;
+  StreamSubscription<stream.Event>? _deletedSubscription;
+  final Set<String> _deletedChannels = {};
 
   @override
   void initState() {
     super.initState();
-    _chatsFuture = Future.value(const []);
+    WidgetsBinding.instance.addObserver(this);
+    _chatsFuture = Future.value([]);
     _bootstrap();
   }
 
@@ -53,8 +64,18 @@ class _ChatsScreenState extends State<ChatsScreen> {
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    _deletedSubscription?.cancel();
+    _expiryTimer?.cancel();
     _client?.disconnectUser();
     super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed && !_isConnecting) {
+      _refresh().catchError((Object _) {});
+    }
   }
 
   Future<void> _bootstrap() async {
@@ -64,13 +85,13 @@ class _ChatsScreenState extends State<ChatsScreen> {
     });
 
     try {
-      final tokenData = await widget.session.chatApi.getStreamToken();
+      final tokenData = await AppScope.read(context).chats.getStreamToken();
+      if (!mounted) return;
       stream.StreamChatClient? client;
       String? message = tokenData.message;
 
       if (tokenData.token != null && AppConfig.streamApiKey.isEmpty) {
-        message =
-            'Додай STREAM_API_KEY у mobile/.env і повністю перезапусти Flutter.';
+        message = context.l10n.addStreamApiKeyToMobileEnvAndFullyRestart;
       } else if (tokenData.token != null) {
         client = stream.StreamChatClient(AppConfig.streamApiKey);
         await client.connectUser(
@@ -88,11 +109,29 @@ class _ChatsScreenState extends State<ChatsScreen> {
         return;
       }
 
+      await _deletedSubscription?.cancel();
+      if (!mounted) {
+        await client?.disconnectUser();
+        return;
+      }
+      _deletedSubscription = client
+          ?.on()
+          .where(
+            (event) =>
+                event.type == 'channel.deleted' ||
+                event.type == 'notification.channel_deleted',
+          )
+          .listen((event) {
+            if (!mounted) return;
+            if (event.cid != null) {
+              setState(() => _deletedChannels.add(event.cid!));
+            }
+          });
       setState(() {
         _tokenData = tokenData;
         _client = client;
         _message = message;
-        _chatsFuture = widget.session.chatApi.listChats();
+        _chatsFuture = _loadChats();
       });
     } catch (error) {
       if (!mounted) {
@@ -100,8 +139,8 @@ class _ChatsScreenState extends State<ChatsScreen> {
       }
 
       setState(() {
-        _message = apiErrorMessage(error);
-        _chatsFuture = Future.value(const []);
+        _message = context.localizeMessage(apiErrorMessage(error));
+        _chatsFuture = Future.value([]);
       });
     } finally {
       if (mounted) {
@@ -110,18 +149,49 @@ class _ChatsScreenState extends State<ChatsScreen> {
     }
   }
 
+  Future<List<EventChat>> _loadChats() async {
+    final scope = AppScope.read(context);
+    final chats = await LoadActiveChats(scope.chats, scope.events)();
+    if (mounted) _scheduleExpiry(chats);
+    return chats;
+  }
+
+  void _scheduleExpiry(List<EventChat> chats) {
+    _expiryTimer?.cancel();
+    final now = DateTime.now();
+    final ends =
+        chats
+            .where((c) => c.isActiveAt(now) && c.endsAt != null)
+            .map((c) => c.endsAt!)
+            .toList()
+          ..sort();
+    if (ends.isEmpty) return;
+    _expiryTimer = Timer(ends.first.difference(now), () {
+      if (!mounted) return;
+      setState(() {});
+      _scheduleExpiry(chats);
+    });
+  }
+
   Future<void> _refresh() async {
     setState(() {
-      _chatsFuture = widget.session.chatApi.listChats();
+      _chatsFuture = _loadChats();
     });
     await _chatsFuture;
   }
 
   Future<void> _openChat(EventChat chat) async {
+    if (!chat.isActiveAt(DateTime.now())) {
+      showErrorSnackBar(
+        context,
+        context.l10n.theEventHasEndedItsChatIsNoLongerAvailable,
+      );
+      return;
+    }
     final client = _client;
 
     if (client == null) {
-      showErrorSnackBar(context, 'Stream Chat ще не налаштовано.');
+      showErrorSnackBar(context, context.l10n.streamChatIsNotConfiguredYet);
       return;
     }
 
@@ -151,7 +221,10 @@ class _ChatsScreenState extends State<ChatsScreen> {
       }
     } catch (error) {
       if (mounted) {
-        showErrorSnackBar(context, apiErrorMessage(error));
+        showErrorSnackBar(
+          context,
+          context.localizeMessage(apiErrorMessage(error)),
+        );
       }
     }
   }
@@ -162,56 +235,95 @@ class _ChatsScreenState extends State<ChatsScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Чати'),
+        title: Text(context.l10n.chats),
         actions: [
           IconButton(
             onPressed: _isConnecting ? null : _bootstrap,
-            icon: const Icon(Icons.refresh),
-            tooltip: 'Оновити',
+            icon: Icon(Icons.refresh),
+            tooltip: context.l10n.refresh,
           ),
         ],
       ),
       body: SafeArea(
         child:
             _isConnecting
-                ? const Center(child: CircularProgressIndicator())
+                ? ListView(
+                  padding: EdgeInsets.all(24),
+                  children: [LoadingSkeleton(cards: false, count: 5)],
+                )
                 : RefreshIndicator(
                   onRefresh: _refresh,
                   child: FutureBuilder<List<EventChat>>(
                     future: _chatsFuture,
                     builder: (context, snapshot) {
-                      final chats = snapshot.data ?? [];
+                      final chats =
+                          (snapshot.data ?? <EventChat>[])
+                              .where(
+                                (chat) =>
+                                    chat.isActiveAt(DateTime.now()) &&
+                                    !_deletedChannels.contains(
+                                      'messaging:${chat.streamChannelId}',
+                                    ),
+                              )
+                              .toList();
 
                       return ListView(
-                        padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
+                        padding: EdgeInsets.fromLTRB(16, 8, 16, 24),
                         children: [
                           if (_message != null) ...[
                             _InfoCard(
                               icon: Icons.key_off_outlined,
-                              text: _message!,
+                              text: context.localizeMessage(_message!),
                             ),
-                            const SizedBox(height: 12),
+                            SizedBox(height: 12),
                           ],
                           if (tokenData != null && _client != null) ...[
                             _InfoCard(
                               icon: Icons.verified_user_outlined,
-                              text:
-                                  'Підключено як ${tokenData.fullName}. Тут показані тільки чати твоїх подій.',
+                              text: context.l10n
+                                  .connectedAsOnlyChatsForYourEventsAppearHere(
+                                    (tokenData.fullName).toString(),
+                                  ),
                             ),
-                            const SizedBox(height: 12),
+                            SizedBox(height: 12),
                           ],
                           if (snapshot.connectionState ==
                               ConnectionState.waiting)
-                            const Padding(
-                              padding: EdgeInsets.all(32),
-                              child: Center(child: CircularProgressIndicator()),
+                            LoadingSkeleton(cards: false, count: 4)
+                          else if (snapshot.hasError)
+                            EmptyState(
+                              title: context.l10n.couldNotLoadChats,
+                              message: context.localizeMessage(
+                                apiErrorMessage(snapshot.error!),
+                              ),
+                              actionLabel: context.l10n.tryAgain,
+                              onAction: _refresh,
                             )
                           else if (chats.isEmpty)
-                            const _EmptyChats()
+                            EmptyState(
+                              title: context.l10n.yourConversationsStartHere,
+                              message:
+                                  context
+                                      .l10n
+                                      .joinAnEventToChatWithItsParticipants,
+                              actionLabel: context.l10n.findEvents,
+                              onAction: () async {
+                                await Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder:
+                                        (_) => EventListScreen(
+                                          session: widget.session,
+                                        ),
+                                  ),
+                                );
+                                if (mounted) _refresh();
+                              },
+                              icon: Icons.chat_bubble_outline,
+                            )
                           else
                             ...chats.map(
                               (chat) => Padding(
-                                padding: const EdgeInsets.only(bottom: 12),
+                                padding: EdgeInsets.only(bottom: 12),
                                 child: _EventChatTile(
                                   chat: chat,
                                   canOpen: _client != null,
@@ -249,7 +361,7 @@ class _EventChatTile extends StatelessWidget {
     return Card(
       child: ListTile(
         onTap: onTap,
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         leading: CircleAvatar(
           radius: 24,
           foregroundImage:
@@ -269,7 +381,11 @@ class _EventChatTile extends StatelessWidget {
           ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800),
         ),
         subtitle: Text(
-          '${chat.locationName} · ${formatter.format(chat.startsAt.toLocal())} · ${chat.participantCount} учасн.',
+          context.l10n.participants251(
+            (chat.locationName).toString(),
+            (formatter.format(chat.startsAt.toLocal())).toString(),
+            (chat.participantCount).toString(),
+          ),
           maxLines: 2,
           overflow: TextOverflow.ellipsis,
         ),
@@ -295,35 +411,12 @@ class _InfoCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(16),
         child: Row(
           children: [
             Icon(icon),
-            const SizedBox(width: 12),
+            SizedBox(width: 12),
             Expanded(child: Text(text)),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _EmptyChats extends StatelessWidget {
-  const _EmptyChats();
-
-  @override
-  Widget build(BuildContext context) {
-    return const Padding(
-      padding: EdgeInsets.only(top: 120),
-      child: Center(
-        child: Column(
-          children: [
-            Icon(Icons.forum_outlined, size: 56),
-            SizedBox(height: 12),
-            Text(
-              'Чатів ще немає.\nДолучись до події або створи свою.',
-              textAlign: TextAlign.center,
-            ),
           ],
         ),
       ),

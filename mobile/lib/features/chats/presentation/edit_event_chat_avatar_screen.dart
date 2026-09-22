@@ -1,8 +1,10 @@
+import 'package:joicrememory/l10n/localization.dart';
+import '../../../app/app_scope.dart';
 import 'package:flutter/material.dart';
 
 import '../../../core/network/api_error_message.dart';
-import '../../../core/session/app_session.dart';
-import '../data/event_chat.dart';
+import '../../auth/presentation/controllers/auth_controller.dart';
+import '../domain/entities/event_chat.dart';
 
 class EditEventChatAvatarScreen extends StatefulWidget {
   const EditEventChatAvatarScreen({
@@ -11,7 +13,7 @@ class EditEventChatAvatarScreen extends StatefulWidget {
     required this.chat,
   });
 
-  final AppSession session;
+  final AuthController session;
   final EventChat chat;
 
   @override
@@ -50,7 +52,7 @@ class _EditEventChatAvatarScreenState extends State<EditEventChatAvatarScreen> {
     try {
       final avatarUrl = _avatarController.text.trim();
 
-      await widget.session.chatApi.updateChatAvatar(
+      await AppScope.read(context).chats.updateChatAvatar(
         eventId: widget.chat.eventId,
         avatarUrl: clear || avatarUrl.isEmpty ? null : avatarUrl,
       );
@@ -68,7 +70,9 @@ class _EditEventChatAvatarScreenState extends State<EditEventChatAvatarScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            'Не вдалося оновити аватар чату: ${apiErrorMessage(error)}',
+            context.l10n.couldNotUpdateTheChatAvatar(
+              (context.localizeMessage(apiErrorMessage(error))).toString(),
+            ),
           ),
         ),
       );
@@ -88,11 +92,11 @@ class _EditEventChatAvatarScreenState extends State<EditEventChatAvatarScreen> {
 
     final uri = Uri.tryParse(avatarUrl);
     if (uri == null || !uri.hasScheme || uri.host.isEmpty) {
-      return 'Встав повне посилання на зображення';
+      return context.l10n.enterTheFullImageUrl;
     }
 
     if (uri.scheme != 'https' && uri.scheme != 'http') {
-      return 'Посилання має починатися з https:// або http://';
+      return context.l10n.theUrlMustStartWithHttpsOrHttp;
     }
 
     final path = uri.path.toLowerCase();
@@ -103,7 +107,7 @@ class _EditEventChatAvatarScreenState extends State<EditEventChatAvatarScreen> {
         uri.host == 'static.wikia.nocookie.net';
 
     if (!looksLikeImage) {
-      return 'Це має бути пряме посилання на файл картинки';
+      return context.l10n.useADirectLinkToAnImageFile;
     }
 
     return null;
@@ -117,13 +121,13 @@ class _EditEventChatAvatarScreenState extends State<EditEventChatAvatarScreen> {
     final initial = title.isEmpty ? '?' : title.characters.first.toUpperCase();
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Аватар чату')),
+      appBar: AppBar(title: Text(context.l10n.chatAvatar)),
       body: SafeArea(
         child: Form(
           key: _formKey,
           child: ListView(
             keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-            padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
+            padding: EdgeInsets.fromLTRB(16, 8, 16, 24),
             children: [
               Center(
                 child: CircleAvatar(
@@ -131,15 +135,15 @@ class _EditEventChatAvatarScreenState extends State<EditEventChatAvatarScreen> {
                   foregroundImage:
                       hasAvatarUrl ? NetworkImage(avatarUrl) : null,
                   onForegroundImageError: hasAvatarUrl ? (_, _) {} : null,
-                  child: Text(initial, style: const TextStyle(fontSize: 28)),
+                  child: Text(initial, style: TextStyle(fontSize: 28)),
                 ),
               ),
-              const SizedBox(height: 18),
+              SizedBox(height: 18),
               TextFormField(
                 controller: _avatarController,
-                decoration: const InputDecoration(
-                  labelText: 'Посилання на аватарку',
-                  helperText: 'Прямий URL: https://site.com/avatar.png',
+                decoration: InputDecoration(
+                  labelText: context.l10n.avatarUrl,
+                  helperText: context.l10n.directUrlHttpsSiteComAvatarPng,
                   prefixIcon: Icon(Icons.image_outlined),
                 ),
                 keyboardType: TextInputType.url,
@@ -147,17 +151,19 @@ class _EditEventChatAvatarScreenState extends State<EditEventChatAvatarScreen> {
                     (_) => FocusManager.instance.primaryFocus?.unfocus(),
                 validator: _validateAvatarUrl,
               ),
-              const SizedBox(height: 18),
+              SizedBox(height: 18),
               ElevatedButton.icon(
                 onPressed: _isSaving ? null : _save,
-                icon: const Icon(Icons.save_outlined),
-                label: Text(_isSaving ? 'Збереження...' : 'Зберегти'),
+                icon: Icon(Icons.save_outlined),
+                label: Text(
+                  _isSaving ? context.l10n.saving239 : context.l10n.save,
+                ),
               ),
-              const SizedBox(height: 10),
+              SizedBox(height: 10),
               OutlinedButton.icon(
                 onPressed: _isSaving ? null : () => _save(clear: true),
-                icon: const Icon(Icons.delete_outline),
-                label: const Text('Очистити аватар'),
+                icon: Icon(Icons.delete_outline),
+                label: Text(context.l10n.removeAvatar),
               ),
             ],
           ),

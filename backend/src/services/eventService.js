@@ -1,3 +1,6 @@
+const db = require('../config/db');
+const { effectiveStatus, validateEventChange } = require('./eventStatusPolicy');
+const lifecycle = require('./eventLifecycleService');
 const eventRepository = require('../repositories/eventRepository');
 const userRepository = require('../repositories/userRepository');
 const streamService = require('./streamService');
@@ -27,22 +30,35 @@ async function getEvent(id) {
     throw new ApiError(404, 'Event not found');
   }
 
+  return { ...event, status: effectiveStatus(event) };
+}
+
+async function getVisibleEvent(id, auth) {
+  const event = await getEvent(id);
+  if (event.status === 'draft') {
+    const user = auth ? await requireSyncedUser(auth) : null;
+    if (user?.id !== event.creatorUserId) throw new ApiError(404, 'Event not found');
+  }
   return event;
 }
 
 async function ensureEventChatChannel(event, memberUsers = []) {
+  if (event.status !== 'published' || (event.endsAt && new Date(event.endsAt) <= new Date())) {
+    throw new ApiError(410, 'Подія завершена. Приєднання до чату недоступне.');
+  }
   const creator = await userRepository.findById(event.creatorUserId);
 
   if (!creator) {
     throw new ApiError(404, 'Event creator not found');
   }
 
-  await streamService.upsertUsers([creator, ...memberUsers]);
 
   let chat = await eventRepository.findChatChannelByEventId(event.id);
   const streamChannelId =
     chat?.stream_channel_id || streamService.buildEventChannelId(event.id);
 
+  if (!chat) chat = await eventRepository.createChatChannel(event.id, creator.id, streamChannelId);
+  await streamService.upsertUsers([creator, ...memberUsers]);
   await streamService.ensureEventChannel({
     eventId: event.id,
     streamChannelId,
@@ -55,13 +71,6 @@ async function ensureEventChatChannel(event, memberUsers = []) {
     )
   });
 
-  if (!chat) {
-    chat = await eventRepository.createChatChannel(
-      event.id,
-      creator.id,
-      streamChannelId
-    );
-  }
 
   return chat;
 }
@@ -69,26 +78,18 @@ async function ensureEventChatChannel(event, memberUsers = []) {
 async function createEvent(auth, payload) {
   const user = await requireSyncedUser(auth);
 
+  const status = payload.status || 'published';
+  validateEventChange({ ...payload, status: 'draft', participantCount: 1 }, { status });
   const event = await eventRepository.create({
     ...payload,
     creatorUserId: user.id
   });
 
-  await streamService.upsertUser({
-    streamUserId: user.streamUserId || user.firebaseUid,
-    fullName: user.fullName,
-    avatarUrl: user.avatarUrl
-  });
-
-  const streamChannelId = await streamService.createEventChannel({
-    eventId: event.id,
-    creatorUserId: user.id,
-    creatorStreamUserId: user.streamUserId || user.firebaseUid,
-    title: event.title,
-    image: event.imageUrl
-  });
-
-  await eventRepository.createChatChannel(event.id, user.id, streamChannelId);
+  if (event.status === 'published') {
+    // Keep creation successful if Stream is temporarily unavailable; chat list repairs it.
+    try { await ensureEventChatChannel(event, [user]); }
+    catch (_) { console.error('Event chat provisioning deferred', event.id); }
+  }
 
   return getEvent(event.id);
 }
@@ -98,17 +99,22 @@ async function updateEvent(auth, eventId, payload) {
   const event = await getEvent(eventId);
   const participation = await eventRepository.findParticipant(eventId, user.id);
 
-  if (event.creatorUserId !== user.id && participation?.role !== 'organizer') {
+  if (event.creatorUserId !== user.id && (event.status === 'draft' || participation?.role !== 'organizer' || participation?.status !== 'joined')) {
     throw new ApiError(403, 'Only event organizer can update this event');
   }
 
+  validateEventChange(event, payload);
   const updated = await eventRepository.update(eventId, payload);
 
   if (!updated) {
     throw new ApiError(404, 'Event not found');
   }
 
-  if (payload.title) {
+  if (updated.status === 'published' && event.status === 'draft') {
+    try { await ensureEventChatChannel(updated, [user]); }
+    catch (_) { console.error('Event chat provisioning deferred', eventId); }
+  }
+  if (payload.title && updated.status === 'published') {
     const chat = await eventRepository.findChatChannelByEventId(eventId);
     await streamService.updateChannel({
       streamChannelId: chat?.stream_channel_id,
@@ -136,6 +142,7 @@ async function deleteEvent(auth, eventId) {
 async function joinEvent(auth, eventId) {
   const user = await requireSyncedUser(auth);
   const event = await getEvent(eventId);
+  if (event.status !== 'published') throw new ApiError(409, 'Подія недоступна для участі.');
   const participation = await eventRepository.findParticipant(eventId, user.id);
 
   if (participation?.status === 'joined') {
@@ -161,6 +168,7 @@ async function leaveEvent(auth, eventId) {
   const user = await requireSyncedUser(auth);
   const event = await getEvent(eventId);
 
+  if (event.status !== 'published') throw new ApiError(409, 'Участь у завершеній події не змінюється.');
   if (event.creatorUserId === user.id) {
     throw new ApiError(400, 'Event creator cannot leave their own event');
   }
@@ -178,16 +186,24 @@ async function leaveEvent(auth, eventId) {
 
 async function listMyEvents(auth) {
   const user = await requireSyncedUser(auth);
-  return eventRepository.listByUser(user.id);
+  const events = await eventRepository.listByUser(user.id);
+  return events.map(event => ({ ...event, status: effectiveStatus(event) }));
 }
 
 module.exports = {
   listEvents,
   getEvent,
+  getVisibleEvent,
   createEvent,
-  updateEvent,
-  deleteEvent,
-  joinEvent,
-  leaveEvent,
+  updateEvent: async (auth, id, payload) => {
+    const result = await db.withEventLock(id, () => updateEvent(auth, id, payload));
+    if (['completed', 'cancelled'].includes(result.status)) {
+      lifecycle.cleanup().catch(() => console.error('Cleanup deferred'));
+    }
+    return result;
+  },
+  deleteEvent: (auth, id) => db.withEventLock(id, () => deleteEvent(auth, id)),
+  joinEvent: (auth, id) => db.withEventLock(id, () => joinEvent(auth, id)),
+  leaveEvent: (auth, id) => db.withEventLock(id, () => leaveEvent(auth, id)),
   listMyEvents
 };

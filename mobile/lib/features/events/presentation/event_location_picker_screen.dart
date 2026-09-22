@@ -1,8 +1,7 @@
+import 'package:joicrememory/l10n/localization.dart';
 import 'package:flutter/material.dart';
-import 'package:geolocator/geolocator.dart';
+import '../../../app/app_scope.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-
-import '../../../core/constants/app_colors.dart';
 
 class EventLocationPickerScreen extends StatefulWidget {
   const EventLocationPickerScreen({super.key, this.initialLocation});
@@ -34,6 +33,12 @@ class _EventLocationPickerScreenState extends State<EventLocationPickerScreen> {
     }
   }
 
+  @override
+  void dispose() {
+    _mapController?.dispose();
+    super.dispose();
+  }
+
   Future<void> _centerOnCurrentLocation({bool selectLocation = true}) async {
     setState(() => _isLocating = true);
 
@@ -63,31 +68,11 @@ class _EventLocationPickerScreenState extends State<EventLocationPickerScreen> {
   }
 
   Future<LatLng?> _resolveCurrentLocation() async {
-    final serviceEnabled = await Geolocator.isLocationServiceEnabled();
-
-    if (!serviceEnabled) {
-      return null;
-    }
-
-    var permission = await Geolocator.checkPermission();
-
-    if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
-    }
-
-    if (permission == LocationPermission.denied ||
-        permission == LocationPermission.deniedForever) {
-      return null;
-    }
-
-    final position = await Geolocator.getCurrentPosition(
-      locationSettings: const LocationSettings(
-        accuracy: LocationAccuracy.high,
-        timeLimit: Duration(seconds: 8),
-      ),
-    );
-
-    return LatLng(position.latitude, position.longitude);
+    final result = await AppScope.read(context).location.currentLocation();
+    final location = result.location;
+    return location == null
+        ? null
+        : LatLng(location.latitude, location.longitude);
   }
 
   void _selectLocation(LatLng location) {
@@ -105,15 +90,15 @@ class _EventLocationPickerScreenState extends State<EventLocationPickerScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Місце події'),
+        title: Text(context.l10n.eventLocation),
         actions: [
           IconButton(
             onPressed:
                 _isLocating
                     ? null
                     : () => _centerOnCurrentLocation(selectLocation: true),
-            icon: const Icon(Icons.my_location_outlined),
-            tooltip: 'Моя позиція',
+            icon: Icon(Icons.my_location_outlined),
+            tooltip: context.l10n.myLocation,
           ),
         ],
       ),
@@ -136,11 +121,11 @@ class _EventLocationPickerScreenState extends State<EventLocationPickerScreen> {
             markers: {
               if (selectedLocation != null)
                 Marker(
-                  markerId: const MarkerId('selected_event_location'),
+                  markerId: MarkerId('selected_event_location'),
                   position: selectedLocation,
                   draggable: true,
                   onDragEnd: _selectLocation,
-                  infoWindow: const InfoWindow(title: 'Місце події'),
+                  infoWindow: InfoWindow(title: context.l10n.eventLocation),
                 ),
             },
             myLocationEnabled: _canShowUserLocation,
@@ -148,9 +133,7 @@ class _EventLocationPickerScreenState extends State<EventLocationPickerScreen> {
             zoomControlsEnabled: false,
           ),
           if (_isLocating)
-            const Positioned.fill(
-              child: Center(child: CircularProgressIndicator()),
-            ),
+            Positioned.fill(child: Center(child: CircularProgressIndicator())),
           Positioned(
             left: 16,
             right: 16,
@@ -161,18 +144,18 @@ class _EventLocationPickerScreenState extends State<EventLocationPickerScreen> {
                 children: [
                   DecoratedBox(
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: Theme.of(context).colorScheme.surface,
                       borderRadius: BorderRadius.circular(8),
                       boxShadow: [
                         BoxShadow(
                           color: Colors.black.withValues(alpha: 0.08),
                           blurRadius: 16,
-                          offset: const Offset(0, 8),
+                          offset: Offset(0, 8),
                         ),
                       ],
                     ),
                     child: Padding(
-                      padding: const EdgeInsets.all(12),
+                      padding: EdgeInsets.all(12),
                       child: Row(
                         children: [
                           Icon(
@@ -181,15 +164,17 @@ class _EventLocationPickerScreenState extends State<EventLocationPickerScreen> {
                                 : Icons.check_circle_outline,
                             color:
                                 selectedLocation == null
-                                    ? AppColors.rosyGranite
-                                    : AppColors.leaf,
+                                    ? Theme.of(
+                                      context,
+                                    ).colorScheme.onSurfaceVariant
+                                    : Theme.of(context).colorScheme.primary,
                           ),
-                          const SizedBox(width: 10),
+                          SizedBox(width: 10),
                           Expanded(
                             child: Text(
                               selectedLocation == null
-                                  ? 'Точку ще не обрано'
-                                  : 'Місце на мапі обрано',
+                                  ? context.l10n.noPinSelectedYet
+                                  : context.l10n.mapLocationSelected,
                               style: Theme.of(context).textTheme.bodyMedium,
                             ),
                           ),
@@ -197,14 +182,14 @@ class _EventLocationPickerScreenState extends State<EventLocationPickerScreen> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 10),
+                  SizedBox(height: 10),
                   ElevatedButton.icon(
                     onPressed:
                         selectedLocation == null
                             ? null
                             : () => Navigator.of(context).pop(selectedLocation),
-                    icon: const Icon(Icons.check),
-                    label: const Text('Використати місце'),
+                    icon: Icon(Icons.check),
+                    label: Text(context.l10n.useThisLocation),
                   ),
                 ],
               ),

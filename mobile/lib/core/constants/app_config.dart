@@ -8,7 +8,5 @@ class AppConfig {
 
   static String get streamApiKey => dotenv.env['STREAM_API_KEY'] ?? '';
 
-  static String get googleMapsApiKey =>
-      dotenv.env['GOOGLE_MAPS_API_KEY'] ?? '';
+  static String get googleMapsApiKey => dotenv.env['GOOGLE_MAPS_API_KEY'] ?? '';
 }
-

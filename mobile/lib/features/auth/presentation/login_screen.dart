@@ -1,7 +1,9 @@
+import '../../../core/localization/language_selector.dart';
+import 'package:joicrememory/l10n/localization.dart';
 import 'package:flutter/material.dart';
 
 import '../../../core/network/api_error_message.dart';
-import '../../../core/session/app_session.dart';
+import '../../auth/presentation/controllers/auth_controller.dart';
 import '../../../core/ui/app_snack_bar.dart';
 import 'forgot_password_screen.dart';
 import 'register_screen.dart';
@@ -9,7 +11,7 @@ import 'register_screen.dart';
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key, required this.session});
 
-  final AppSession session;
+  final AuthController session;
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
@@ -41,7 +43,10 @@ class _LoginScreenState extends State<LoginScreen> {
       if (!mounted) {
         return;
       }
-      showErrorSnackBar(context, apiErrorMessage(error));
+      showErrorSnackBar(
+        context,
+        context.localizeMessage(apiErrorMessage(error)),
+      );
     }
   }
 
@@ -53,20 +58,21 @@ class _LoginScreenState extends State<LoginScreen> {
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.all(24),
+            padding: EdgeInsets.all(24),
             child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 420),
+              constraints: BoxConstraints(maxWidth: 420),
               child: Form(
                 key: _formKey,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
+                    const LanguageSelector(),
                     Icon(
                       Icons.diversity_3,
                       size: 64,
                       color: colorScheme.primary,
                     ),
-                    const SizedBox(height: 18),
+                    SizedBox(height: 18),
                     Text(
                       'JoicreMemory',
                       textAlign: TextAlign.center,
@@ -77,52 +83,71 @@ class _LoginScreenState extends State<LoginScreen> {
                         color: colorScheme.onSurface,
                       ),
                     ),
-                    const SizedBox(height: 8),
+                    SizedBox(height: 8),
                     Text(
-                      'Ініціативи, події та люди поруч',
+                      context.l10n.initiativesEventsAndPeopleNearby,
                       textAlign: TextAlign.center,
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
                         color: colorScheme.onSurfaceVariant,
                       ),
                     ),
-                    const SizedBox(height: 32),
+                    SizedBox(height: 32),
+                    if (widget.session.errorMessage != null) ...[
+                      Text(
+                        context.localizeMessage(widget.session.errorMessage!),
+                        style: TextStyle(color: colorScheme.error),
+                        textAlign: TextAlign.center,
+                      ),
+                      if (widget.session.restorationFailed)
+                        TextButton.icon(
+                          onPressed:
+                              widget.session.isBusy
+                                  ? null
+                                  : widget.session.initialize,
+                          icon: Icon(Icons.refresh),
+                          label: Text(context.l10n.retryRestoringYourSession),
+                        ),
+                      SizedBox(height: 16),
+                    ],
                     TextFormField(
                       controller: _emailController,
                       keyboardType: TextInputType.emailAddress,
-                      decoration: const InputDecoration(
-                        labelText: 'Пошта',
+                      decoration: InputDecoration(
+                        labelText: context.l10n.email53,
                         hintText: 'name@example.com',
                         prefixIcon: Icon(Icons.mail_outline),
                       ),
                       validator: (value) {
                         if (value == null || !value.contains('@')) {
-                          return 'Введи коректну пошту';
+                          return context.l10n.enterAValidEmail;
                         }
                         return null;
                       },
                     ),
-                    const SizedBox(height: 14),
+                    SizedBox(height: 14),
                     TextFormField(
                       controller: _passwordController,
                       obscureText: true,
-                      decoration: const InputDecoration(
-                        labelText: 'Пароль',
-                        hintText: 'Введи пароль',
+                      decoration: InputDecoration(
+                        labelText: context.l10n.password,
+                        hintText: context.l10n.enterYourPassword,
                         prefixIcon: Icon(Icons.lock_outline),
                       ),
                       validator: (value) {
                         if (value == null || value.length < 6) {
-                          return 'Мінімум 6 символів';
+                          return context.l10n.atLeastCharacters309;
                         }
                         return null;
                       },
                     ),
-                    const SizedBox(height: 22),
+                    SizedBox(height: 22),
                     ElevatedButton.icon(
                       onPressed: widget.session.isBusy ? null : _submit,
-                      icon: const Icon(Icons.login),
+                      icon: Icon(Icons.login),
                       label: Text(
-                        widget.session.isBusy ? 'Зачекай...' : 'Увійти',
+                        widget.session.isBusy
+                            ? context.l10n.pleaseWait310
+                            : context.l10n.signIn,
                       ),
                     ),
                     Align(
@@ -141,10 +166,10 @@ class _LoginScreenState extends State<LoginScreen> {
                                     ),
                                   );
                                 },
-                        child: const Text('Забув пароль?'),
+                        child: Text(context.l10n.forgotPassword),
                       ),
                     ),
-                    const SizedBox(height: 10),
+                    SizedBox(height: 10),
                     TextButton(
                       onPressed:
                           widget.session.isBusy
@@ -167,10 +192,12 @@ class _LoginScreenState extends State<LoginScreen> {
 
                                 showSuccessSnackBar(
                                   context,
-                                  'Акаунт створено. Тепер увійди зі своєю поштою та паролем.',
+                                  context
+                                      .l10n
+                                      .accountCreatedSignInWithYourEmailAndPassword,
                                 );
                               },
-                      child: const Text('Створити акаунт'),
+                      child: Text(context.l10n.createAccount),
                     ),
                   ],
                 ),

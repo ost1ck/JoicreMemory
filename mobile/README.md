@@ -2,13 +2,16 @@
 
 Flutter mobile application.
 
-Planned structure:
+Structure:
 
 ```text
 lib/
-  core/
-  features/
+  app/          dependency composition and scope
+  core/         network, errors, theme and shared UI
+  features/     domain, data and presentation per feature
 ```
+
+See [ARCHITECTURE.md](ARCHITECTURE.md) for layer responsibilities, migration boundaries and tests.
 
 Main integrations:
 
@@ -68,3 +71,7 @@ restrict the key in Google Cloud:
 
 - iOS restriction: bundle ID `com.joicrememory.joicrememory`
 - Android restriction: package `com.joicrememory.joicrememory` plus SHA-1
+
+## Мова інтерфейсу
+
+Українська / English / мова пристрою перемикаються на екрані входу та в профілі; вибір зберігається локально. Після отримання оновлень виконайте `flutter pub get` і повний `flutter run`. Переклади редагуються у `lib/l10n/app_uk.arb` та `app_en.arb`, потім `flutter gen-l10n`. Події й повідомлення користувачів не перекладаються автоматично.
